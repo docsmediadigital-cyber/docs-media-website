@@ -1,0 +1,248 @@
+@import "tailwindcss";
+
+/*
+  DOCS MEDIA theme — purple & white, tuned to the official logo (#600a79 = brand-700).
+  The brand scale below is the single place to tune colours. If the official
+  logo uses an exact purple, set it as --color-brand-700 and adjust the
+  neighbours; everything in the UI references these tokens.
+*/
+@theme {
+  --color-brand-50: #fbf4fd;
+  --color-brand-100: #f4e6fa;
+  --color-brand-200: #e8cbf4;
+  --color-brand-300: #d89fe9;
+  --color-brand-400: #c06ad9;
+  --color-brand-500: #a23bc0;
+  --color-brand-600: #801a9c;
+  --color-brand-700: #600a79;
+  --color-brand-800: #4c075f;
+  --color-brand-900: #3a0549;
+  --color-brand-950: #250330;
+
+  --color-ink: #1f0a2b;
+  --color-ink-soft: #55405f;
+  --color-lavender: #f3e3f9;
+  /* No pure white: page, alternate sections and cards are all purple tints */
+  --color-surface: #f8ecfc;
+  --color-tint: #efdcf7;
+  --color-tint-2: #e6cdf1;
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Plus Jakarta Sans Variable", "Inter Variable", ui-sans-serif,
+    system-ui, sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(37 3 48 / 0.05), 0 8px 24px -8px rgb(37 3 48 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(37 3 48 / 0.06), 0 18px 40px -12px rgb(96 10 121 / 0.28);
+  --shadow-glow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 30px 80px -20px rgb(162 59 192 / 0.55);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-aurora: aurora 18s ease-in-out infinite alternate;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-ping-soft: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes aurora {
+  0% { transform: translate3d(-4%, -2%, 0) scale(1); }
+  100% { transform: translate3d(6%, 5%, 0) scale(1.18); }
+}
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+@keyframes ping-soft {
+  75%, 100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes draw {
+  from { stroke-dashoffset: 700; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-tint);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--color-brand-200);
+  color: var(--color-brand-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Native <details> accordion marker removal (FAQs) */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+
+/* ------------------------------------------------------------------ */
+/* Visual polish utilities                                             */
+/* ------------------------------------------------------------------ */
+
+/* Gradient headline text */
+.text-gradient {
+  background-image: linear-gradient(100deg, #fbeaff 0%, #e8b4f7 40%, #ff9ad0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.text-gradient-brand {
+  background-image: linear-gradient(100deg, var(--color-brand-700), var(--color-brand-500) 55%, #e0479e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Dotted texture (masked so it fades at the edges) */
+.bg-dots {
+  background-image: radial-gradient(rgb(255 255 255 / 0.22) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+.bg-dots-light {
+  background-image: radial-gradient(rgb(96 10 121 / 0.16) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(ellipse at top right, black 20%, transparent 70%);
+}
+
+/* Hero load-in (CSS only, runs once) */
+.rise {
+  animation: rise-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.rise-1 { animation-delay: 0.05s; }
+.rise-2 { animation-delay: 0.15s; }
+.rise-3 { animation-delay: 0.28s; }
+.rise-4 { animation-delay: 0.4s; }
+
+/* Hero dashboard illustration */
+.chart-line {
+  stroke-dasharray: 700;
+  stroke-dashoffset: 700;
+  animation: draw 2.2s 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.chart-bar {
+  transform-origin: bottom;
+  transform: scaleY(0);
+  animation: grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Button sheen on hover */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+}
+.btn-shine:hover::after {
+  transform: translateX(120%);
+}
+
+/* Gradient ring that appears on card hover */
+.card-ring {
+  position: relative;
+}
+.card-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--color-brand-400), #ff7ab8 60%, var(--color-brand-600));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.card-ring:hover::before,
+.card-ring:focus-within::before {
+  opacity: 1;
+}
+
+/* Scroll reveal: pure CSS, only where scroll-driven animations exist.
+   Elsewhere the content is simply visible (no JS, no hidden content). */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 32%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .rise,
+  .chart-line,
+  .chart-bar {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+    stroke-dashoffset: 0;
+  }
+}
