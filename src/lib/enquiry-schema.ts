@@ -13,29 +13,50 @@ const serviceValues = serviceOptions.map((o) => o.value) as [string, ...string[]
  * Shared by the client form (instant feedback) and the API route (the source
  * of truth). Keep limits generous but bounded.
  */
-export const enquirySchema = z.object({
-  name: z.string().trim().min(2, "Please enter your name").max(100),
-  email: z.string().trim().email("Enter a valid email address").max(200),
+export type EnquiryMessages = {
+  name: string;
+  email: string;
+  phone: string;
+  service: string;
+  message: string;
+  consent: string;
+};
+
+const englishMessages: EnquiryMessages = {
+  name: "Please enter your name",
+  email: "Enter a valid email address",
+  phone: "Use digits, spaces, + or - only",
+  service: "Choose a service",
+  message: "Tell us a little more (at least 10 characters)",
+  consent: "Please agree so we can contact you about your enquiry",
+};
+
+export function makeEnquirySchema(m: EnquiryMessages = englishMessages) {
+  return z.object({
+  name: z.string().trim().min(2, m.name).max(100),
+  email: z.string().trim().email(m.email).max(200),
   phone: z
     .string()
     .trim()
     .max(30)
-    .regex(/^[0-9+()\-\s]*$/, "Use digits, spaces, + or - only")
+    .regex(/^[0-9+()\-\s]*$/, m.phone)
     .optional()
     .or(z.literal("")),
   company: z.string().trim().max(150).optional().or(z.literal("")),
-  service: z.enum(serviceValues, { message: "Choose a service" }),
+  service: z.enum(serviceValues, { message: m.service }),
   message: z
     .string()
     .trim()
-    .min(10, "Tell us a little more (at least 10 characters)")
+    .min(10, m.message)
     .max(3000, "Please keep your message under 3000 characters"),
-  consent: z.literal(true, {
-    message: "Please agree so we can contact you about your enquiry",
-  }),
+  consent: z.literal(true, { message: m.consent }),
   /** Honeypot: real users never see or fill this. */
   website: z.string().max(0).optional().or(z.literal("")),
-});
+  });
+}
+
+/** Server-side schema (English messages). The form validates with a localised copy first. */
+export const enquirySchema = makeEnquirySchema();
 
 export type EnquiryInput = z.infer<typeof enquirySchema>;
 

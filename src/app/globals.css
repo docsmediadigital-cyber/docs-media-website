@@ -246,3 +246,34 @@ details > summary::-webkit-details-marker {
     stroke-dashoffset: 0;
   }
 }
+
+
+/* ------------------------------------------------------------------ */
+/* Arabic / right-to-left                                              */
+/* ------------------------------------------------------------------ */
+
+/* Arabic-capable fonts first; Latin text (brand names) falls back to Inter. */
+html[dir="rtl"] {
+  --font-sans: "Noto Sans Arabic Variable", "Inter Variable", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+  --font-display: "Noto Sans Arabic Variable", "Plus Jakarta Sans Variable", ui-sans-serif,
+    system-ui, sans-serif;
+}
+
+/* Letter-spacing breaks the joined letters of Arabic script. */
+html[dir="rtl"] *,
+html[dir="rtl"] *::before,
+html[dir="rtl"] *::after {
+  letter-spacing: 0 !important;
+}
+
+/* Arabic needs a little more line height than Latin. */
+html[dir="rtl"] body {
+  line-height: 1.75;
+}
+html[dir="rtl"] h1,
+html[dir="rtl"] h2,
+html[dir="rtl"] h3,
+html[dir="rtl"] h4 {
+  line-height: 1.4;
+}

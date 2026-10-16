@@ -2,18 +2,26 @@ import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
 import { whatsappLink } from "@/lib/utils";
+import { getDictionary } from "@/i18n/dictionary";
+import { localePath, type Locale } from "@/i18n/config";
 
 /** Closing call-to-action used at the bottom of most pages. */
 export function CtaBanner({
-  title = "Ready to talk about your brand?",
-  text = "Tell us what you want to achieve. We will reply with clear next steps.",
-  whatsappMessage = "Hi DOCS MEDIA, I'd like to discuss my project.",
+  lang = "en",
+  title,
+  text,
+  whatsappMessage,
 }: {
+  lang?: Locale;
   title?: string;
   text?: string;
   /** Pre-filled WhatsApp text. Pass a page-specific message so you can tell which page the lead came from. */
   whatsappMessage?: string;
 }) {
+  const t = getDictionary(lang);
+  title ??= t.cta.title;
+  text ??= t.cta.text;
+  whatsappMessage ??= t.wa.form;
   return (
     <section aria-labelledby="cta-title" className="bg-tint py-16 sm:py-20">
       <Container>
@@ -53,10 +61,10 @@ export function CtaBanner({
               size="lg"
             >
               <Icon name="whatsapp" className="h-5 w-5" />
-              Chat on WhatsApp
+              {t.ui.chatWhatsApp}
             </ButtonLink>
-            <ButtonLink href="/contact" variant="outline-light" size="lg">
-              Send an enquiry
+            <ButtonLink href={localePath(lang, "/contact")} variant="outline-light" size="lg">
+              {t.ui.sendEnquiry}
               <Icon name="arrow-right" className="h-4 w-4" />
             </ButtonLink>
           </div>

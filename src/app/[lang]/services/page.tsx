@@ -7,34 +7,41 @@ import { Icon } from "@/components/ui/Icon";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { ProcessSteps } from "@/components/sections/ProcessSteps";
 import { CtaBanner } from "@/components/sections/CtaBanner";
-import { getPost } from "@/content/blog";
-import { services } from "@/content/services";
+import { getBlogPosts, getServices } from "@/content/localized";
+import { getDictionary } from "@/i18n/dictionary";
+import { localePath } from "@/i18n/config";
+import { resolveLang, type LangProps } from "@/i18n/params";
 import { buildMetadata, serviceListJsonLd } from "@/lib/seo";
 import { whatsappLink } from "@/lib/utils";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Digital Marketing & Shopify Services in India",
-  description:
-    "Meta Ads, social media marketing, SEO, website development, Shopify stores, content and branding for Indian businesses. Ask us anything on WhatsApp.",
-  path: "/services",
-  keywords: [
-    "digital marketing services",
-    "Meta Ads management",
-    "Shopify store development",
-    "website development services",
-  ],
-});
+export async function generateMetadata({ params }: LangProps): Promise<Metadata> {
+  const lang = await resolveLang(params);
+  const sp = getDictionary(lang).servicesPage;
+  return buildMetadata({
+    title: sp.metaTitle,
+    description: sp.metaDescription,
+    path: "/services",
+    keywords: sp.keywords,
+    lang,
+  });
+}
 
-export default function ServicesPage() {
+export default async function ServicesPage({ params }: LangProps) {
+  const lang = await resolveLang(params);
+  const t = getDictionary(lang);
+  const sp = t.servicesPage;
+  const services = getServices(lang);
+  const posts = getBlogPosts(lang);
   return (
     <>
-      <JsonLd data={serviceListJsonLd(services)} />
+      <JsonLd data={serviceListJsonLd(services, lang)} />
       <PageHero
-        title="Digital marketing & website development services"
-        description="Meta Ads, social media, SEO, creative, Shopify stores and websites for Indian businesses. Pick the service you need today, or combine several into one joined-up plan."
-        crumbs={[{ name: "Services", path: "/services" }]}
+        lang={lang}
+        title={sp.title}
+        description={sp.description}
+        crumbs={[{ name: sp.crumb, path: "/services" }]}
       >
-        <ul className="flex flex-wrap gap-2" aria-label="Jump to a service">
+        <ul className="flex flex-wrap gap-2" aria-label={sp.jump}>
           {services.map((s) => (
             <li key={s.slug}>
               <a
@@ -52,7 +59,7 @@ export default function ServicesPage() {
       <Section>
         <ul className="space-y-8 sm:space-y-10">
           {services.map((service, i) => {
-            const guide = service.guideSlug ? getPost(service.guideSlug) : undefined;
+            const guide = service.guideSlug ? posts.find((p) => p.slug === service.guideSlug) : undefined;
             return (
             <li key={service.slug}>
               <article
@@ -65,7 +72,7 @@ export default function ServicesPage() {
                     <Icon name={service.icon} className="h-7 w-7" />
                   </span>
                   <p className="mt-5 text-sm font-semibold uppercase tracking-[0.14em] text-brand-700">
-                    Service {String(i + 1).padStart(2, "0")}
+                    {sp.serviceLabel(String(i + 1).padStart(2, "0"))}
                   </p>
                   <h2
                     id={`${service.slug}-title`}
@@ -77,37 +84,36 @@ export default function ServicesPage() {
                     {service.description}
                   </p>
                   <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                    <ButtonLink href="/contact">
-                      Enquire about this
+                    <ButtonLink href={localePath(lang, "/contact")}>
+                      {sp.enquire}
                       <Icon name="arrow-right" className="h-4 w-4" />
                     </ButtonLink>
                     <ButtonLink
-                      href={whatsappLink(
-                        `Hi DOCS MEDIA, I'd like to know more about ${service.title}.`,
-                      )}
+                      href={whatsappLink(t.wa.service(service.title))}
                       external
                       variant="secondary"
                     >
                       <Icon name="whatsapp" className="h-4 w-4" />
-                      Ask on WhatsApp
+                      {sp.askWhatsApp}
                     </ButtonLink>
                   </div>
                   {service.href && (
                     <p className="mt-6 text-sm text-ink-soft">
-                      Full details:{" "}
+                      {sp.fullDetails}{" "}
                       <Link
-                        href={service.href}
+                        href={localePath(lang, service.href)}
                         className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-900"
                       >
-                        {service.title} in India
+                        {sp.pageLink(service.title)}
                       </Link>
                     </p>
                   )}
                   {guide && (
                     <p className="mt-6 text-sm text-ink-soft">
-                      Read our guide:{" "}
+                      {sp.readGuide}{" "}
                       <Link
                         href={`/blog/${guide.slug}`}
+                        hrefLang="en"
                         className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-900"
                       >
                         {guide.title}
@@ -117,7 +123,7 @@ export default function ServicesPage() {
                 </div>
 
                 <div className="rounded-2xl bg-lavender p-6 sm:p-8">
-                  <h3 className="font-display text-lg font-bold">What’s included</h3>
+                  <h3 className="font-display text-lg font-bold">{sp.included}</h3>
                   <ul className="mt-4 space-y-3">
                     {service.deliverables.map((item) => (
                       <li key={item} className="flex items-start gap-3 text-ink-soft">
@@ -139,17 +145,18 @@ export default function ServicesPage() {
       <Section tone="lavender" labelledBy="process-title">
         <SectionHeading
           id="process-title"
-          eyebrow="Process"
-          title="How we work with you"
-          description="Every service follows the same clear path from first conversation to ongoing improvement."
+          eyebrow={sp.processEyebrow}
+          title={sp.processTitle}
+          description={sp.processText}
         />
-        <ProcessSteps />
+        <ProcessSteps lang={lang} />
       </Section>
 
       <CtaBanner
-        title="Not sure which service fits?"
-        text="Describe your business and goals and we will recommend a sensible place to start."
-        whatsappMessage="Hi DOCS MEDIA, I'm not sure which service I need. Can you suggest where to start?"
+        lang={lang}
+        title={sp.ctaTitle}
+        text={sp.ctaText}
+        whatsappMessage={t.wa.notSure}
       />
     </>
   );

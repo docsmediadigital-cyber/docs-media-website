@@ -29,10 +29,13 @@ export type FocusPage = {
   processTitle: string;
   process: Array<{ title: string; text: string }>;
   faqs: Faq[];
+  exploreCta: string;
+  ctaTitle: string;
+  faqTitle: string;
   /** Blog slugs to link from the page (internal linking). */
   guideSlugs: string[];
   /** Other focus page / service paths to cross-link. */
-  crossLink: { label: string; href: string; text: string };
+  crossLink: { label: string; href: string; text: string; cta: string };
 };
 
 /**
@@ -46,18 +49,18 @@ export const focusPages: FocusPage[] = [
     path: "/personal-branding",
     name: "Personal Branding",
     icon: "profile",
-    metaTitle: "Personal Branding Services in India for Founders & Creators",
+    metaTitle: "Personal Branding Services for Founders & Creators",
     metaDescription:
-      "Personal branding for founders, professionals, doctors, coaches and creators in India: brand positioning, LinkedIn and Instagram presence, content and a personal website.",
+      "Personal branding for founders, professionals, doctors, coaches and creators: brand positioning, LinkedIn and Instagram presence, content and a personal website.",
     keywords: [
-      "personal branding services India",
+      "personal branding services",
       "personal branding agency",
       "founder branding",
       "LinkedIn personal branding",
       "Instagram personal brand",
       "personal brand website",
     ],
-    h1: "Personal branding services for founders, professionals and creators in India",
+    h1: "Personal branding services for founders, professionals and creators",
     intro:
       "People buy from people they recognise and trust. We help you define who you are, what you stand for and who you want to reach, then show up consistently on Instagram, LinkedIn, YouTube and your own website.",
     image: {
@@ -166,8 +169,12 @@ export const focusPages: FocusPage[] = [
           "Yes. We build fast, mobile-first personal websites with your story, services, enquiry form and WhatsApp click-to-chat, with on-page SEO foundations so people searching for you can find you.",
       },
     ],
+    exploreCta: "Explore personal branding",
+    ctaTitle: "Ready to start with personal branding?",
+    faqTitle: "Personal Branding: common questions",
     guideSlugs: ["monthly-social-media-content-plan", "on-page-seo-checklist"],
     crossLink: {
+      cta: "Explore creative studio",
       label: "Creative Studio",
       href: "/creative-studio",
       text: "Need photos, reels or video for your brand? Our creative studio produces content for you.",
@@ -178,18 +185,18 @@ export const focusPages: FocusPage[] = [
     path: "/creative-studio",
     name: "Creative Studio",
     icon: "studio",
-    metaTitle: "Creative Studio in India: Video, Reels, Photo & Design",
+    metaTitle: "Creative Studio: Video, Reels, Photo & Design",
     metaDescription:
-      "DOCS MEDIA creative studio for Indian brands: reels and short-form video, product and brand photography, ad creatives, graphic design and content production.",
+      "DOCS MEDIA creative studio for brands: reels and short-form video, product and brand photography, ad creatives, graphic design and content production.",
     keywords: [
-      "creative studio India",
+      "creative studio",
       "video production for brands",
       "reels and short video production",
       "product photography",
       "ad creative design",
       "content production agency",
     ],
-    h1: "Creative studio for reels, video, photography and design in India",
+    h1: "Creative studio for reels, video, photography and design",
     intro:
       "Strong creative is what stops the scroll. Our creative studio plans, shoots, edits and designs the visuals your brand needs for social media, ads, your website and your store, all in one consistent look.",
     image: {
@@ -298,8 +305,12 @@ export const focusPages: FocusPage[] = [
           "Not for planning, editing and design, which we handle remotely. For shoots, we will confirm location and logistics with you when we scope the project.",
       },
     ],
+    exploreCta: "Explore creative studio",
+    ctaTitle: "Ready to start with creative studio?",
+    faqTitle: "Creative Studio: common questions",
     guideSlugs: ["monthly-social-media-content-plan", "meta-ads-campaign-basics"],
     crossLink: {
+      cta: "Explore personal branding",
       label: "Personal Branding",
       href: "/personal-branding",
       text: "Building a brand around yourself? Pair studio content with a personal branding plan.",

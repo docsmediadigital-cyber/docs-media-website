@@ -17,14 +17,14 @@ export const faqs: Faq[] = [
       "Yes. Our personal branding service helps founders, professionals and creators build a clear, consistent presence on Instagram, LinkedIn, YouTube and their own website. Our creative studio produces reels, short-form video, product and brand photography, ad creatives and graphic design. Details are on our Personal Branding and Creative Studio pages.",
   },
   {
-    question: "Do you work with businesses across India?",
+    question: "Do you work with businesses in any location?",
     answer:
-      "Yes. We help businesses across India with digital marketing, websites and Shopify stores. Most conversations start on WhatsApp or through the contact form, so you do not need to be in the same city as us.",
+      "Yes. We help businesses wherever they are based with digital marketing, websites and Shopify stores. Most conversations start on WhatsApp or through the contact form, so you do not need to be in the same city as us.",
   },
   {
     question: "Can you build or set up a Shopify store for my business?",
     answer:
-      "Yes. We set up Shopify stores, customise the theme, add products and collections, and configure checkout, payments and shipping for Indian customers. Available payment options depend on the gateways Shopify supports for your business, and we will talk you through them before you commit.",
+      "Yes. We set up Shopify stores, customise the theme, add products and collections, and configure checkout, payments and shipping for your customers. Available payment options depend on the gateways Shopify supports for your business, and we will talk you through them before you commit.",
   },
   {
     question: "Do you manage Meta Ads on Facebook and Instagram?",

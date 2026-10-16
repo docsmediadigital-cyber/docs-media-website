@@ -12,15 +12,16 @@ import { getService } from "@/content/services";
 import { blogPostingJsonLd, buildMetadata } from "@/lib/seo";
 import { formatDate, readingMinutes } from "@/lib/utils";
 
+/** Articles are written in English only; /ar/blog/<slug> returns 404 (the Arabic blog index links to the English URLs). */
 export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+  return blogPosts.map((post) => ({ lang: "en", slug: post.slug }));
 }
 
-export async function generateMetadata(
-  props: PageProps<"/blog/[slug]">,
-): Promise<Metadata> {
-  const { slug } = await props.params;
-  const post = getPost(slug);
+type Props = { params: Promise<{ lang: string; slug: string }> };
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { slug, lang } = await props.params;
+  const post = lang === "en" ? getPost(slug) : undefined;
   if (!post) {
     return { title: "Article not found", robots: { index: false, follow: false } };
   }
@@ -29,14 +30,16 @@ export async function generateMetadata(
     description: post.description,
     path: `/blog/${post.slug}`,
     type: "article",
+    translated: false,
     publishedTime: post.date,
     modifiedTime: post.updated,
     keywords: [post.category, post.title],
   });
 }
 
-export default async function BlogPostPage(props: PageProps<"/blog/[slug]">) {
-  const { slug } = await props.params;
+export default async function BlogPostPage(props: Props) {
+  const { slug, lang } = await props.params;
+  if (lang !== "en") notFound();
   const post = getPost(slug);
   if (!post) notFound();
 

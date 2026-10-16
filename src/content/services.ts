@@ -34,7 +34,7 @@ export const services: Service[] = [
     summary:
       "Consistent, on-brand Instagram and Facebook presence built around a clear content strategy.",
     description:
-      "We plan, create and publish social media content for the platforms where your Indian audience actually spends time, then review what works and adjust the plan month by month.",
+      "We plan, create and publish social media content for the platforms where your audience actually spends time, then review what works and adjust the plan month by month.",
     deliverables: [
       "Platform and audience strategy",
       "Monthly content calendar",
@@ -67,9 +67,9 @@ export const services: Service[] = [
     slug: "seo",
     title: "Search Engine Optimisation (SEO)",
     summary:
-      "Technical, on-page and content SEO that helps the right people in India find you.",
+      "Technical, on-page and content SEO that helps the right people find you.",
     description:
-      "We audit your site, fix what blocks crawling and indexing, and build content around the questions your customers search for, in the way Indian customers search for them.",
+      "We audit your site, fix what blocks crawling and indexing, and build content around the questions your customers search for, in the way your customers search for them.",
     deliverables: [
       "Technical SEO audit and fixes",
       "Keyword and search-intent research",
@@ -106,14 +106,14 @@ export const services: Service[] = [
     deliverables: [
       "Responsive, mobile-first website design and development",
       "Shopify store setup, theme customisation and product pages",
-      "Checkout, payment and shipping setup for Indian customers",
+      "Checkout, payment and shipping setup for your customers",
       "Landing pages for campaigns",
       "On-page SEO foundations",
       "Analytics and conversion tracking",
       "Enquiry forms and WhatsApp click-to-chat",
     ],
     icon: "web",
-    guideSlug: "shopify-store-launch-checklist-india",
+    guideSlug: "shopify-store-launch-checklist",
   },
   {
     slug: "branding",

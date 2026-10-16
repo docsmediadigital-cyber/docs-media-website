@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { localePath, type Locale } from "@/i18n/config";
 
 /**
  * PLACEHOLDER brand mark: a purple rounded square with a white "D" and a
@@ -27,7 +28,9 @@ export function Logo({
   inverted,
   className,
   size = "md",
+  lang = "en",
 }: {
+  lang?: Locale;
   /** White wordmark for dark backgrounds. */
   inverted?: boolean;
   className?: string;
@@ -38,7 +41,7 @@ export function Logo({
 
   return (
     <Link
-      href="/"
+      href={localePath(lang, "/")}
       aria-label={`${name} — home`}
       className={cn(
         "group inline-flex items-center gap-2.5 transition duration-300 hover:opacity-90",

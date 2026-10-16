@@ -16,11 +16,11 @@ export function whatsappLink(message?: string): string {
   return `${siteConfig.whatsapp.url}?text=${encodeURIComponent(message)}`;
 }
 
-/** Format an ISO date (YYYY-MM-DD) for display, timezone-safe. */
-export function formatDate(iso: string): string {
+/** Format an ISO date (YYYY-MM-DD) for display, timezone-safe. Arabic uses Latin digits. */
+export function formatDate(iso: string, lang: "en" | "ar" = "en"): string {
   const [y, m, d] = iso.split("-").map(Number);
   const date = new Date(Date.UTC(y, (m ?? 1) - 1, d ?? 1));
-  return date.toLocaleDateString("en-GB", {
+  return date.toLocaleDateString(lang === "ar" ? "ar-u-nu-latn" : "en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",

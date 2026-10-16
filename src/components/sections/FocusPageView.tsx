@@ -7,7 +7,9 @@ import { Icon } from "@/components/ui/Icon";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { FaqList } from "@/components/sections/FaqList";
 import { CtaBanner } from "@/components/sections/CtaBanner";
-import { getPost } from "@/content/blog";
+import { getBlogPosts } from "@/content/localized";
+import { getDictionary } from "@/i18n/dictionary";
+import { localePath, type Locale } from "@/i18n/config";
 import type { FocusPage } from "@/content/focus-pages";
 import { faqJsonLd, focusPageJsonLd } from "@/lib/seo";
 import { whatsappLink } from "@/lib/utils";
@@ -16,31 +18,34 @@ const linkClass =
   "font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-900";
 
 /** Shared layout for the Personal Branding and Creative Studio landing pages. */
-export function FocusPageView({ page }: { page: FocusPage }) {
+export function FocusPageView({ page, lang }: { page: FocusPage; lang: Locale }) {
+  const t = getDictionary(lang);
+  const posts = getBlogPosts(lang);
   const guides = page.guideSlugs
-    .map((slug) => getPost(slug))
+    .map((slug) => posts.find((p) => p.slug === slug))
     .filter((p): p is NonNullable<typeof p> => Boolean(p));
 
   return (
     <>
-      <JsonLd data={focusPageJsonLd(page)} />
+      <JsonLd data={focusPageJsonLd(page, lang)} />
       <JsonLd data={faqJsonLd(page.faqs)} />
 
       <PageHero
+        lang={lang}
         title={page.h1}
         description={page.intro}
         crumbs={[
-          { name: "Services", path: "/services" },
+          { name: t.nav.services, path: "/services" },
           { name: page.name, path: page.path },
         ]}
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <ButtonLink href={whatsappLink(page.whatsappMessage)} external size="lg">
             <Icon name="whatsapp" className="h-5 w-5" />
-            Discuss on WhatsApp
+            {t.focus.discuss}
           </ButtonLink>
-          <ButtonLink href="/contact" variant="secondary" size="lg">
-            Send an enquiry
+          <ButtonLink href={localePath(lang, "/contact")} variant="secondary" size="lg">
+            {t.ui.sendEnquiry}
             <Icon name="arrow-right" className="h-4 w-4" />
           </ButtonLink>
         </div>
@@ -49,7 +54,7 @@ export function FocusPageView({ page }: { page: FocusPage }) {
       {page.image && (
         <Section className="!pb-0 sm:!pb-0" labelledBy="focus-image-title">
           <h2 id="focus-image-title" className="sr-only">
-            {page.name} at DOCS MEDIA
+            {t.focus.imageHeading(page.name)}
           </h2>
           <figure className="reveal overflow-hidden rounded-[2rem] border border-brand-200 shadow-glow">
             <Image
@@ -89,7 +94,7 @@ export function FocusPageView({ page }: { page: FocusPage }) {
       <Section tone="lavender" labelledBy="offerings-title">
         <SectionHeading
           id="offerings-title"
-          eyebrow="What we do"
+          eyebrow={t.focus.whatWeDo}
           title={page.offeringsTitle}
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -112,7 +117,7 @@ export function FocusPageView({ page }: { page: FocusPage }) {
       <Section labelledBy="included-title">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
           <div>
-            <SectionHeading id="included-title" eyebrow="What’s included" title="Typical deliverables" />
+            <SectionHeading id="included-title" eyebrow={t.focus.included} title={t.focus.deliverables} />
             <ul className="space-y-3">
               {page.deliverables.map((d) => (
                 <li key={d} className="flex items-start gap-3 text-lg text-ink-soft">
@@ -125,24 +130,24 @@ export function FocusPageView({ page }: { page: FocusPage }) {
             </ul>
           </div>
           <aside
-            aria-label="Related reading and services"
+            aria-label={t.focus.relatedAria}
             className="self-start rounded-3xl border border-brand-200 bg-lavender p-7 sm:p-9"
           >
-            <h2 className="font-display text-xl font-bold">Related</h2>
+            <h2 className="font-display text-xl font-bold">{t.focus.related}</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
               {page.crossLink.text}{" "}
-              <Link href={page.crossLink.href} className={linkClass}>
-                Explore {page.crossLink.label.toLowerCase()}
+              <Link href={localePath(lang, page.crossLink.href)} className={linkClass}>
+                {page.crossLink.cta}
               </Link>
               .
             </p>
             {guides.length > 0 && (
               <>
-                <h3 className="mt-6 font-display text-base font-bold">Guides from our blog</h3>
+                <h3 className="mt-6 font-display text-base font-bold">{t.focus.guides}</h3>
                 <ul className="mt-3 space-y-2">
                   {guides.map((g) => (
                     <li key={g.slug}>
-                      <Link href={`/blog/${g.slug}`} className={linkClass}>
+                      <Link href={`/blog/${g.slug}`} hrefLang="en" className={linkClass}>
                         {g.title}
                       </Link>
                     </li>
@@ -151,9 +156,9 @@ export function FocusPageView({ page }: { page: FocusPage }) {
               </>
             )}
             <p className="mt-6 text-sm text-ink-soft">
-              See all our{" "}
-              <Link href="/services" className={linkClass}>
-                digital marketing services
+              {t.focus.seeAll}{" "}
+              <Link href={localePath(lang, "/services")} className={linkClass}>
+                {t.focus.servicesLink}
               </Link>
               .
             </p>
@@ -163,7 +168,7 @@ export function FocusPageView({ page }: { page: FocusPage }) {
 
       {/* Process */}
       <Section tone="dark" labelledBy="focus-process-title">
-        <SectionHeading id="focus-process-title" invert eyebrow="Process" title={page.processTitle} />
+        <SectionHeading id="focus-process-title" invert eyebrow={t.focus.process} title={page.processTitle} />
         <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {page.process.map((step, i) => (
             <li
@@ -184,8 +189,8 @@ export function FocusPageView({ page }: { page: FocusPage }) {
       <Section labelledBy="focus-faq-title">
         <SectionHeading
           id="focus-faq-title"
-          eyebrow="FAQs"
-          title={`${page.name}: common questions`}
+          eyebrow={t.focus.faqs}
+          title={page.faqTitle}
         />
         <div className="max-w-3xl">
           <FaqList faqs={page.faqs} />
@@ -193,8 +198,9 @@ export function FocusPageView({ page }: { page: FocusPage }) {
       </Section>
 
       <CtaBanner
-        title={`Ready to start with ${page.name.toLowerCase()}?`}
-        text="Tell us about your goals and we will suggest a sensible first step."
+        lang={lang}
+        title={page.ctaTitle}
+        text={t.focus.ctaText}
         whatsappMessage={page.whatsappMessage}
       />
     </>

@@ -4,13 +4,13 @@ import { useId, useState, type FormEvent } from "react";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
 import {
-  enquirySchema,
-  serviceLabel,
-  serviceOptions,
+  makeEnquirySchema,
   toFieldErrors,
   type EnquiryFieldErrors,
   type EnquiryResponse,
 } from "@/lib/enquiry-schema";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/config";
 import { cn, whatsappLink } from "@/lib/utils";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -41,18 +41,28 @@ const inputClass =
   "mt-1.5 block w-full rounded-xl border border-brand-200 bg-surface px-4 py-3 text-base text-ink placeholder:text-ink-soft/60 shadow-sm transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100 aria-[invalid=true]:border-red-500 aria-[invalid=true]:focus:ring-red-100";
 
 /** WhatsApp prefill so the visitor can send their enquiry in one tap. */
-function buildWhatsAppMessage(v: Values): string {
+function buildWhatsAppMessage(
+  v: Values,
+  f: ReturnType<typeof getDictionary>["form"],
+  options: ServiceOption[],
+): string {
+  const label = options.find((o) => o.value === v.service)?.label ?? v.service;
   const lines = [
-    `Hi DOCS MEDIA, I'm ${v.name.trim()}.`,
-    v.service ? `I'm interested in: ${serviceLabel(v.service)}.` : "",
-    v.company.trim() ? `Company: ${v.company.trim()}.` : "",
+    f.waHi(v.name.trim()),
+    v.service ? f.waInterested(label) : "",
+    v.company.trim() ? f.waCompany(v.company.trim()) : "",
     "",
     v.message.trim().slice(0, 700),
   ];
   return lines.filter((l, i) => l !== "" || i === 3).join("\n");
 }
 
-export function EnquiryForm() {
+type ServiceOption = { value: string; label: string };
+
+/** `options` (localised service list + "not sure") is passed by the page to keep content out of the client bundle. */
+export function EnquiryForm({ lang = "en", options }: { lang?: Locale; options: ServiceOption[] }) {
+  const t = getDictionary(lang);
+  const f = t.form;
   const uid = useId();
   const [values, setValues] = useState<Values>(initialValues);
   const [errors, setErrors] = useState<EnquiryFieldErrors>({});
@@ -73,7 +83,7 @@ export function EnquiryForm() {
     if (status === "submitting") return;
 
     setFormError("");
-    const parsed = enquirySchema.safeParse(values);
+    const parsed = makeEnquirySchema(f.errors).safeParse(values);
     if (!parsed.success) {
       const fieldErrors = toFieldErrors(parsed.error);
       setErrors(fieldErrors);
@@ -107,9 +117,7 @@ export function EnquiryForm() {
       setFormError(data.error);
       setStatus("error");
     } catch {
-      setFormError(
-        "Network problem. Please check your connection and try again, or message us on WhatsApp.",
-      );
+      setFormError(f.network);
       setStatus("error");
     }
   }
@@ -126,33 +134,31 @@ export function EnquiryForm() {
         {delivered ? (
           <>
             <h3 className="mt-5 font-display text-2xl font-bold">
-              Thank you, {submitted.name.trim().split(" ")[0]}.
+              {f.thanks(submitted.name.trim().split(" ")[0])}
             </h3>
             <p className="mt-3 leading-relaxed text-ink-soft">
-              Your enquiry has been sent and we will get back to you soon. For a
-              faster reply, you can also continue the conversation on WhatsApp.
+              {f.sentText}
             </p>
           </>
         ) : (
           <>
             <h3 className="mt-5 font-display text-2xl font-bold">
-              One more step: send it on WhatsApp
+              {f.oneMore}
             </h3>
             <p className="mt-3 leading-relaxed text-ink-soft">
-              Your details look good. Tap the button below to send your enquiry to us
-              on WhatsApp with your message already filled in.
+              {f.oneMoreText}
             </p>
           </>
         )}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <ButtonLink
-            href={whatsappLink(buildWhatsAppMessage(submitted))}
+            href={whatsappLink(buildWhatsAppMessage(submitted, f, options))}
             external
             variant="whatsapp"
             size="lg"
           >
             <Icon name="whatsapp" className="h-5 w-5" />
-            {delivered ? "Continue on WhatsApp" : "Send on WhatsApp"}
+            {delivered ? f.continueWa : f.sendWa}
           </ButtonLink>
           <button
             type="button"
@@ -162,7 +168,7 @@ export function EnquiryForm() {
             }}
             className="rounded-full border border-brand-200 px-6 py-3.5 text-base font-semibold text-brand-800 hover:bg-brand-100"
           >
-            Send another enquiry
+            {f.another}
           </button>
         </div>
       </div>
@@ -186,12 +192,12 @@ export function EnquiryForm() {
       onSubmit={onSubmit}
       noValidate
       className="rounded-3xl border border-brand-200 bg-surface p-6 shadow-soft sm:p-10"
-      aria-label="Enquiry form"
+      aria-label={f.ariaLabel}
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor={id("name")} className="text-sm font-semibold">
-            Name <span className="text-red-700" aria-hidden="true">*</span>
+            {f.name} <span className="text-red-700" aria-hidden="true">*</span>
           </label>
           <input
             id={id("name")}
@@ -202,7 +208,7 @@ export function EnquiryForm() {
             value={values.name}
             onChange={(e) => update("name", e.target.value)}
             className={inputClass}
-            placeholder="Your full name"
+            placeholder={f.namePh}
             {...aria("name")}
           />
           {fieldError("name")}
@@ -210,7 +216,7 @@ export function EnquiryForm() {
 
         <div>
           <label htmlFor={id("email")} className="text-sm font-semibold">
-            Email <span className="text-red-700" aria-hidden="true">*</span>
+            {f.email} <span className="text-red-700" aria-hidden="true">*</span>
           </label>
           <input
             id={id("email")}
@@ -218,6 +224,7 @@ export function EnquiryForm() {
             type="email"
             autoComplete="email"
             inputMode="email"
+            dir="ltr"
             required
             value={values.email}
             onChange={(e) => update("email", e.target.value)}
@@ -230,7 +237,7 @@ export function EnquiryForm() {
 
         <div>
           <label htmlFor={id("phone")} className="text-sm font-semibold">
-            Phone / WhatsApp <span className="font-normal text-ink-soft">(optional)</span>
+            {f.phone} <span className="font-normal text-ink-soft">{f.optional}</span>
           </label>
           <input
             id={id("phone")}
@@ -238,6 +245,7 @@ export function EnquiryForm() {
             type="tel"
             autoComplete="tel"
             inputMode="tel"
+            dir="ltr"
             value={values.phone}
             onChange={(e) => update("phone", e.target.value)}
             className={inputClass}
@@ -249,7 +257,7 @@ export function EnquiryForm() {
 
         <div>
           <label htmlFor={id("company")} className="text-sm font-semibold">
-            Company / brand <span className="font-normal text-ink-soft">(optional)</span>
+            {f.company} <span className="font-normal text-ink-soft">{f.optional}</span>
           </label>
           <input
             id={id("company")}
@@ -259,7 +267,7 @@ export function EnquiryForm() {
             value={values.company}
             onChange={(e) => update("company", e.target.value)}
             className={inputClass}
-            placeholder="Your business name"
+            placeholder={f.companyPh}
             {...aria("company")}
           />
           {fieldError("company")}
@@ -267,7 +275,7 @@ export function EnquiryForm() {
 
         <div className="sm:col-span-2">
           <label htmlFor={id("service")} className="text-sm font-semibold">
-            What do you need help with?{" "}
+            {f.service}{" "}
             <span className="text-red-700" aria-hidden="true">*</span>
           </label>
           <select
@@ -280,9 +288,9 @@ export function EnquiryForm() {
             {...aria("service")}
           >
             <option value="" disabled>
-              Select a service
+              {f.selectService}
             </option>
-            {serviceOptions.map((o) => (
+            {options.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>
@@ -293,7 +301,7 @@ export function EnquiryForm() {
 
         <div className="sm:col-span-2">
           <label htmlFor={id("message")} className="text-sm font-semibold">
-            Tell us about your project{" "}
+            {f.message}{" "}
             <span className="text-red-700" aria-hidden="true">*</span>
           </label>
           <textarea
@@ -304,7 +312,7 @@ export function EnquiryForm() {
             value={values.message}
             onChange={(e) => update("message", e.target.value)}
             className={cn(inputClass, "resize-y")}
-            placeholder="What are you selling, who is it for, and what would you like to achieve?"
+            placeholder={f.messagePh}
             {...aria("message")}
           />
           {fieldError("message")}
@@ -313,9 +321,9 @@ export function EnquiryForm() {
         {/* Honeypot — hidden from people and assistive tech; bots fill it in. */}
         <div
           aria-hidden="true"
-          className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+          className="absolute -start-[9999px] h-0 w-0 overflow-hidden"
         >
-          <label htmlFor={id("website")}>Leave this field empty</label>
+          <label htmlFor={id("website")}>{f.honeypot}</label>
           <input
             id={id("website")}
             name="website"
@@ -339,8 +347,7 @@ export function EnquiryForm() {
               {...aria("consent")}
             />
             <span>
-              I agree to DOCS MEDIA contacting me about this enquiry using the
-              details I have provided.
+              {f.consent}
             </span>
           </label>
           {fieldError("consent")}
@@ -362,18 +369,18 @@ export function EnquiryForm() {
           disabled={status === "submitting"}
           className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-700 px-7 py-3.5 text-base font-semibold text-white shadow-soft transition hover:bg-brand-800 hover:shadow-lift disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {status === "submitting" ? "Sending…" : "Send enquiry"}
+          {status === "submitting" ? f.sending : f.send}
           {status !== "submitting" && <Icon name="arrow-right" className="h-4 w-4" />}
         </button>
         <p className="text-sm text-ink-soft">
-          Prefer chat?{" "}
+          {f.preferChat}{" "}
           <a
-            href={whatsappLink("Hi DOCS MEDIA, I'd like to discuss a project.")}
+            href={whatsappLink(t.wa.form)}
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-900"
           >
-            Message us on WhatsApp
+            {f.messageWhatsApp}
           </a>
         </p>
       </div>

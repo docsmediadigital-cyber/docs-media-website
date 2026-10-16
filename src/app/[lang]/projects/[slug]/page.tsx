@@ -7,7 +7,9 @@ import { ButtonLink } from "@/components/ui/ButtonLink";
 import { Icon } from "@/components/ui/Icon";
 import { CtaBanner } from "@/components/sections/CtaBanner";
 import { getProject, projects } from "@/content/projects";
-import { getService } from "@/content/services";
+import { getLocalizedService } from "@/content/localized";
+import { getDictionary } from "@/i18n/dictionary";
+import { isLocale, locales } from "@/i18n/config";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { buildMetadata, projectJsonLd } from "@/lib/seo";
 
@@ -17,43 +19,51 @@ import { buildMetadata, projectJsonLd } from "@/lib/seo";
  * the build passes and no fake project is ever published.
  */
 export function generateStaticParams() {
-  return projects.length
-    ? projects.map((p) => ({ slug: p.slug }))
-    : [{ slug: "_" }];
+  return locales.flatMap((lang) =>
+    projects.length
+      ? projects.map((p) => ({ lang, slug: p.slug }))
+      : [{ lang, slug: "_" }],
+  );
 }
 
-export async function generateMetadata(
-  props: PageProps<"/projects/[slug]">,
-): Promise<Metadata> {
-  const { slug } = await props.params;
+type Props = { params: Promise<{ lang: string; slug: string }> };
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { slug, lang } = await props.params;
+  if (!isLocale(lang)) return {};
+  const t = getDictionary(lang);
   const project = getProject(slug);
   if (!project) {
-    return { title: "Project not found", robots: { index: false, follow: false } };
+    return { title: t.project.notFound, robots: { index: false, follow: false } };
   }
   return buildMetadata({
+    lang,
     title: project.title,
     description: project.summary,
     path: `/projects/${project.slug}`,
   });
 }
 
-export default async function ProjectPage(props: PageProps<"/projects/[slug]">) {
-  const { slug } = await props.params;
+export default async function ProjectPage(props: Props) {
+  const { slug, lang } = await props.params;
+  if (!isLocale(lang)) notFound();
+  const t = getDictionary(lang);
   const project = getProject(slug);
   if (!project) notFound();
 
   const serviceTitles = project.services
-    .map((s) => getService(s)?.title)
+    .map((s) => getLocalizedService(lang, s)?.title)
     .filter((t): t is string => Boolean(t));
 
   return (
     <>
-      <JsonLd data={projectJsonLd(project)} />
+      <JsonLd data={projectJsonLd(project, lang)} />
       <PageHero
+        lang={lang}
         title={project.title}
         description={project.summary}
         crumbs={[
-          { name: "Projects", path: "/projects" },
+          { name: t.nav.projects, path: "/projects" },
           { name: project.title, path: `/projects/${project.slug}` },
         ]}
       >
@@ -106,9 +116,9 @@ export default async function ProjectPage(props: PageProps<"/projects/[slug]">) 
 
           {(
             [
-              ["The challenge", project.challenge],
-              ["Our approach", project.approach],
-              ["The outcome", project.outcome],
+              [t.project.challenge, project.challenge],
+              [t.project.approach, project.approach],
+              [t.project.outcome, project.outcome],
             ] as const
           ).map(
             ([heading, text]) =>
@@ -122,7 +132,7 @@ export default async function ProjectPage(props: PageProps<"/projects/[slug]">) 
 
           {project.liveUrl && (
             <ButtonLink href={project.liveUrl} external variant="secondary">
-              Visit live project
+              {t.project.visit}
               <Icon name="external" className="h-4 w-4" />
             </ButtonLink>
           )}
@@ -130,7 +140,8 @@ export default async function ProjectPage(props: PageProps<"/projects/[slug]">) 
       </Section>
 
       <CtaBanner
-        whatsappMessage={`Hi DOCS MEDIA, I saw your "${project.title}" project and I'd like to discuss something similar.`}
+        lang={lang}
+        whatsappMessage={t.wa.project(project.title)}
       />
     </>
   );

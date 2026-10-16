@@ -3,26 +3,52 @@ import { blogPosts } from "@/content/blog";
 import { projects } from "@/content/projects";
 
 /**
- * Return a real HTTP 404 (not a streamed 200 + noindex "soft 404") for blog
- * and project URLs whose slug does not exist. Pages themselves still call
- * notFound() as a second line of defence.
+ * Language routing + real 404s.
+ *
+ *  - English lives at the plain URLs (/about) and Arabic under /ar (/ar/about).
+ *    Files are routed as app/[lang]/..., so English requests are rewritten to
+ *    /en/... internally. A direct /en/... request is redirected to the plain URL
+ *    so each page has one canonical address.
+ *  - Blog and project URLs whose slug does not exist get a real HTTP 404 (not a
+ *    streamed 200 + noindex "soft 404"). Blog articles exist in English only, so
+ *    /ar/blog/<slug> is also a 404; the Arabic blog index links to the English URLs.
  */
 const blogSlugs = new Set(blogPosts.map((p) => p.slug));
 const projectSlugs = new Set(projects.map((p) => p.slug));
 
 export function proxy(request: NextRequest) {
-  const [, section, slug] = request.nextUrl.pathname.split("/");
+  const url = request.nextUrl.clone();
+  const { pathname } = url;
+  const first = pathname.split("/")[1];
 
-  const known =
-    (section === "blog" && blogSlugs.has(slug)) ||
-    (section === "projects" && projectSlugs.has(slug));
+  // /en/about → /about (one canonical URL per page)
+  if (first === "en") {
+    url.pathname = pathname.slice(3) || "/";
+    return NextResponse.redirect(url, 308);
+  }
 
-  if (known) return NextResponse.next();
+  const lang = first === "ar" ? "ar" : "en";
+  const rest = lang === "ar" ? pathname.slice(3) || "/" : pathname;
+  const [, section, slug] = rest.split("/");
 
-  // No route matches this path, so the app renders src/app/not-found.tsx with a 404 status.
-  return NextResponse.rewrite(new URL("/__not-found__", request.url));
+  const isMissing =
+    (section === "blog" && slug && !(lang === "en" && blogSlugs.has(slug))) ||
+    (section === "projects" && slug && !projectSlugs.has(slug));
+
+  if (isMissing) {
+    // No route matches, so the [lang]/[...rest] page renders the 404 with a 404 status.
+    url.pathname = `/${lang}/__not-found__`;
+    return NextResponse.rewrite(url);
+  }
+
+  if (lang === "ar") return NextResponse.next();
+
+  url.pathname = `/en${rest === "/" ? "" : rest}`;
+  return NextResponse.rewrite(url);
 }
 
 export const config = {
-  matcher: ["/blog/:slug", "/projects/:slug"],
+  // Everything except API routes, Next internals, files with an extension
+  // (robots.txt, sitemap.xml, images) and the metadata image routes.
+  matcher: ["/((?!api|_next|_vercel|.*\\..*|icon|apple-icon|opengraph-image|twitter-image).*)"],
 };

@@ -12,37 +12,46 @@ import { ProjectCard } from "@/components/projects/ProjectCard";
 import { EmptyProjects } from "@/components/projects/EmptyProjects";
 import { BlogCard } from "@/components/blog/BlogCard";
 import { JsonLd } from "@/components/ui/JsonLd";
-import { principles, services } from "@/content/services";
-import { focusPages } from "@/content/focus-pages";
+import { getBlogPosts, getFocusPages, getPrinciples, getServices } from "@/content/localized";
 import { featuredProjects, projects } from "@/content/projects";
-import { blogPosts } from "@/content/blog";
 import { buildMetadata, serviceListJsonLd } from "@/lib/seo";
-import { siteConfig } from "@/lib/site";
+import { getDictionary } from "@/i18n/dictionary";
+import { localePath } from "@/i18n/config";
+import { resolveLang, type LangProps } from "@/i18n/params";
 import { whatsappLink } from "@/lib/utils";
 
-const homeTitle = `${siteConfig.name} | Digital Marketing & Shopify Agency in India`;
-
-export const metadata: Metadata = {
-  ...buildMetadata({
-    title: homeTitle,
-    description: siteConfig.description,
-    path: "/",
-    keywords: ["digital marketing agency", "Shopify agency India", "Meta Ads management"],
-  }),
-  // `absolute` skips the "| DOCS MEDIA" suffix from the root title template.
-  title: { absolute: homeTitle },
-};
+export async function generateMetadata({ params }: LangProps): Promise<Metadata> {
+  const lang = await resolveLang(params);
+  const t = getDictionary(lang);
+  return {
+    ...buildMetadata({
+      title: t.home.metaTitle,
+      description: t.description,
+      path: "/",
+      keywords: t.home.keywords,
+      lang,
+    }),
+    // `absolute` skips the "| DOCS MEDIA" suffix from the root title template.
+    title: { absolute: t.home.metaTitle },
+  };
+}
 
 /** One icon per principle, in the same order as `principles`. */
 const principleIcons: IconKey[] = ["ads", "search", "web", "check"];
 
-export default function HomePage() {
+export default async function HomePage({ params }: LangProps) {
+  const lang = await resolveLang(params);
+  const t = getDictionary(lang);
+  const h = t.home;
+  const services = getServices(lang);
+  const principles = getPrinciples(lang);
+  const focusPages = getFocusPages(lang);
   const featured = featuredProjects(3);
-  const latestPosts = blogPosts.slice(0, 3);
+  const latestPosts = getBlogPosts(lang).slice(0, 3);
 
   return (
     <>
-      <JsonLd data={serviceListJsonLd(services)} />
+      <JsonLd data={serviceListJsonLd(services, lang)} />
 
       {/* ------------------------------- Hero ------------------------------- */}
       <section
@@ -51,10 +60,10 @@ export default function HomePage() {
       >
         {/* Studio photo: full-bleed (dimmed, cropped away from its own logo) on mobile; on
             desktop it fills the right side and fades into the brand purple on the left. */}
-        <div className="absolute inset-y-0 right-0 w-full lg:w-[70%]">
+        <div className="absolute inset-y-0 end-0 w-full lg:w-[70%]">
           <Image
             src="/hero-studio.jpg"
-            alt="DOCS MEDIA studio wall with the illuminated logo on a purple backdrop"
+            alt={h.heroAlt}
             fill
             priority
             sizes="(min-width: 1024px) 70vw, 100vw"
@@ -62,7 +71,7 @@ export default function HomePage() {
           />
           <div
             aria-hidden="true"
-            className="absolute inset-0 max-lg:bg-brand-950/85 lg:bg-gradient-to-r lg:from-brand-700 lg:via-brand-700/50 lg:via-25% lg:to-transparent lg:to-50%"
+            className="absolute inset-0 max-lg:bg-brand-950/85 lg:bg-gradient-to-r rtl:lg:bg-gradient-to-l lg:from-brand-700 lg:via-brand-700/50 lg:via-25% lg:to-transparent lg:to-50%"
           />
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -80,42 +89,38 @@ export default function HomePage() {
                 <span className="absolute inline-flex h-full w-full animate-ping-soft rounded-full bg-fuchsia-300" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-fuchsia-300" />
               </span>
-              {siteConfig.tagline}
+              {t.tagline}
             </p>
             <h1
               id="hero-title"
               className="rise rise-1 mt-6 font-display text-4xl font-extrabold leading-[1.05] sm:text-6xl lg:text-7xl"
             >
-              Digital marketing that gets your brand{" "}
-              <span className="text-gradient">noticed and remembered.</span>
+              {h.heroTitleA}{" "}
+              <span className="text-gradient">{h.heroTitleB}</span>
             </h1>
             <p className="rise rise-2 mt-7 max-w-xl text-lg leading-relaxed text-brand-100 sm:text-xl">
-              DOCS MEDIA helps Indian businesses grow online with Meta Ads, social
-              media marketing, SEO, creative content, website development and
-              Shopify stores built to turn visitors into enquiries and orders.
+              {h.heroText}
             </p>
             <div className="rise rise-3 mt-10 flex flex-col gap-3 sm:flex-row">
               <ButtonLink
-                href={whatsappLink(
-                  "Hi DOCS MEDIA, I'd like to discuss digital marketing for my business.",
-                )}
+                href={whatsappLink(t.wa.home)}
                 external
                 variant="light"
                 size="lg"
               >
                 <Icon name="whatsapp" className="h-5 w-5" />
-                Start on WhatsApp
+                {h.startWhatsApp}
               </ButtonLink>
-              <ButtonLink href="/services" variant="outline-light" size="lg">
-                Explore our services
+              <ButtonLink href={localePath(lang, "/services")} variant="outline-light" size="lg">
+                {h.exploreServices}
                 <Icon name="arrow-right" className="h-4 w-4" />
               </ButtonLink>
             </div>
             <ul className="rise rise-4 mt-10 flex flex-wrap gap-x-6 gap-y-2 text-sm text-brand-200">
-              {["Clear goals", "Honest expectations", "Regular reporting"].map((t) => (
-                <li key={t} className="inline-flex items-center gap-2">
+              {h.checks.map((c) => (
+                <li key={c} className="inline-flex items-center gap-2">
                   <Icon name="check" className="h-4 w-4 text-fuchsia-300" />
-                  {t}
+                  {c}
                 </li>
               ))}
             </ul>
@@ -134,16 +139,16 @@ export default function HomePage() {
       <Section labelledBy="services-title">
         <SectionHeading
           id="services-title"
-          eyebrow="Services"
-          title="Digital marketing, website and Shopify services for Indian brands"
-          description="From Meta Ads and SEO to website development and Shopify stores, work with us on a single service or combine several into one joined-up plan. Looking for personal branding or our creative studio? Scroll on."
+          eyebrow={h.servicesEyebrow}
+          title={h.servicesTitle}
+          description={h.servicesText}
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services
             .filter((service) => !service.href)
             .map((service) => (
             <li key={service.slug}>
-              <ServiceCard service={service} />
+              <ServiceCard service={service} lang={lang} />
             </li>
           ))}
         </ul>
@@ -153,9 +158,9 @@ export default function HomePage() {
       <Section tone="lavender" id="brand-and-studio" labelledBy="spotlight-title">
         <SectionHeading
           id="spotlight-title"
-          eyebrow="Personal branding & creative studio"
-          title="Build a brand people remember, and the content to show it"
-          description="Two specialist services for founders, creators and growing brands: a personal branding plan and an in-house creative studio for reels, photography, ads and design."
+          eyebrow={h.spotlightEyebrow}
+          title={h.spotlightTitle}
+          description={h.spotlightText}
         />
         <ul className="grid auto-rows-fr gap-6 lg:grid-cols-2">
           {focusPages.map((page) => (
@@ -183,13 +188,13 @@ export default function HomePage() {
                   ))}
                 </ul>
                 <div className="relative mt-8 flex flex-col gap-3 sm:flex-row">
-                  <ButtonLink href={page.path} variant="light">
-                    Explore {page.name.toLowerCase()}
+                  <ButtonLink href={localePath(lang, page.path)} variant="light">
+                    {page.exploreCta}
                     <Icon name="arrow-right" className="h-4 w-4" />
                   </ButtonLink>
                   <ButtonLink href={whatsappLink(page.whatsappMessage)} external variant="outline-light">
                     <Icon name="whatsapp" className="h-4 w-4" />
-                    Ask on WhatsApp
+                    {h.askWhatsApp}
                   </ButtonLink>
                 </div>
               </article>
@@ -202,9 +207,9 @@ export default function HomePage() {
       <Section labelledBy="why-title">
         <SectionHeading
           id="why-title"
-          eyebrow="How we work"
-          title="A practical, no-fluff approach"
-          description="Clear goals, honest expectations and regular reporting, so you always know where your marketing stands."
+          eyebrow={h.howEyebrow}
+          title={h.howTitle}
+          description={h.howText}
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {principles.map((p, i) => (
@@ -228,11 +233,11 @@ export default function HomePage() {
         <SectionHeading
           id="process-title"
           invert
-          eyebrow="Our process"
-          title="From first chat to measurable progress"
-          description="Four simple stages keep every project focused and transparent."
+          eyebrow={h.processEyebrow}
+          title={h.processTitle}
+          description={h.processText}
         />
-        <ProcessSteps invert />
+        <ProcessSteps invert lang={lang} />
       </Section>
 
       {/* ------------------------------- Work -------------------------------- */}
@@ -240,17 +245,13 @@ export default function HomePage() {
         <div className="mb-10 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
             id="work-title"
-            eyebrow="Projects"
-            title="Selected work"
-            description={
-              projects.length
-                ? "A look at recent projects and the thinking behind them."
-                : undefined
-            }
+            eyebrow={h.workEyebrow}
+            title={h.workTitle}
+            description={projects.length ? h.workText : undefined}
           />
           {projects.length > 0 && (
-            <ButtonLink href="/projects" variant="secondary" className="mb-10 self-start sm:mb-14">
-              All projects
+            <ButtonLink href={localePath(lang, "/projects")} variant="secondary" className="mb-10 self-start sm:mb-14">
+              {h.allProjects}
               <Icon name="arrow-right" className="h-4 w-4" />
             </ButtonLink>
           )}
@@ -259,12 +260,12 @@ export default function HomePage() {
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((project) => (
               <li key={project.slug} className="relative">
-                <ProjectCard project={project} />
+                <ProjectCard project={project} lang={lang} />
               </li>
             ))}
           </ul>
         ) : (
-          <EmptyProjects compact />
+          <EmptyProjects compact lang={lang} />
         )}
       </Section>
 
@@ -273,25 +274,25 @@ export default function HomePage() {
         <div className="mb-10 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
             id="blog-title"
-            eyebrow="Insights"
-            title="Latest from the blog"
-            description="Practical marketing guidance you can put to work."
+            eyebrow={h.blogEyebrow}
+            title={h.blogTitle}
+            description={h.blogText}
           />
-          <ButtonLink href="/blog" variant="secondary" className="mb-10 self-start sm:mb-14">
-            All articles
+          <ButtonLink href={localePath(lang, "/blog")} variant="secondary" className="mb-10 self-start sm:mb-14">
+            {h.allArticles}
             <Icon name="arrow-right" className="h-4 w-4" />
           </ButtonLink>
         </div>
         <ul className="grid gap-6 md:grid-cols-3">
           {latestPosts.map((post) => (
             <li key={post.slug}>
-              <BlogCard post={post} />
+              <BlogCard post={post} lang={lang} />
             </li>
           ))}
         </ul>
       </Section>
 
-      <CtaBanner whatsappMessage="Hi DOCS MEDIA, I visited your website and I'd like to discuss my project." />
+      <CtaBanner lang={lang} whatsappMessage={t.wa.homeCta} />
     </>
   );
 }

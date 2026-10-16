@@ -6,6 +6,7 @@ export function Marquee({ items }: { items: string[] }) {
   return (
     <div
       aria-hidden="true"
+      dir="ltr"
       className="relative overflow-hidden border-y border-brand-200 bg-surface py-5 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]"
     >
       <div className="flex w-max animate-marquee items-center gap-10 hover:[animation-play-state:paused]">

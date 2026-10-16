@@ -21,13 +21,11 @@ export const siteConfig = {
   legalName: "DOCS MEDIA",
   tagline: "Digital marketing agency",
   description:
-    "DOCS MEDIA is a digital marketing agency for Indian businesses: Meta Ads, social media marketing, SEO, website development, Shopify stores and creative content.",
+    "DOCS MEDIA is a digital marketing agency for businesses: Meta Ads, social media marketing, SEO, website development, Shopify stores and creative content.",
   url: SITE_URL,
-  locale: "en_IN",
-  /** BCP 47 tag: English as used in India. Drives <html lang>, hreflang and schema inLanguage. */
-  language: "en-IN",
-  /** Country the business markets to (schema.org areaServed). */
-  areaServed: "India",
+  locale: "en_US",
+  /** BCP 47 tag. Drives <html lang>, hreflang and schema inLanguage. */
+  language: "en",
   /** Used for the copyright line. Static on purpose (prerendered pages can't read the clock). */
   copyrightYear: 2026,
   whatsapp: {
@@ -35,6 +33,17 @@ export const siteConfig = {
     number: "917736332903",
     display: "+91 77363 32903",
     url: "https://wa.me/917736332903",
+  },
+  /** Business location. Shown in the footer and on the Contact page, and used in structured data. */
+  address: {
+    lines: ["CA MALL", "Near Mathoth Sree Mahavishnu Temple", "Kanhangad South, Kanhangad", "Kerala 671315"],
+    streetAddress: "CA MALL, Near Mathoth Sree Mahavishnu Temple",
+    locality: "Kanhangad",
+    area: "Kanhangad South",
+    region: "Kerala",
+    postalCode: "671315",
+    /** ISO country code, used only in structured data (not displayed). */
+    countryCode: "IN",
   },
   /** Optional. Leave empty until a real address exists; it is hidden when empty. */
   email: "",
@@ -66,44 +75,60 @@ export const siteConfig = {
   schemaLogo: { src: "/logo-purple.png", width: 710, height: 330 },
 } as const;
 
-/** Core search topics for India. Used for the keywords meta tag and schema `knowsAbout`. */
+/** Core search topics. Used for the keywords meta tag and schema `knowsAbout`. */
 export const seoKeywords = [
-  "digital marketing agency in India",
-  "Meta Ads agency India",
-  "Facebook and Instagram ads India",
-  "Shopify development India",
+  "digital marketing agency",
+  "Meta Ads agency",
+  "Facebook and Instagram ads",
+  "Shopify development",
   "Shopify store setup",
-  "website development company India",
-  "social media marketing India",
-  "SEO services India",
+  "website development company",
+  "social media marketing",
+  "SEO services",
   "performance marketing",
   "landing page design",
-  "personal branding services India",
-  "creative studio India",
+  "personal branding services",
+  "creative studio",
   "reels and video production",
 ] as const;
 
 export type SocialKey = keyof typeof siteConfig.socials;
 
+/** Google Maps link for the business address (opens the maps app on phones). */
+export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+  `${siteConfig.address.streetAddress}, ${siteConfig.address.area}, ${siteConfig.address.locality}, ${siteConfig.address.region} ${siteConfig.address.postalCode}`,
+)}`;
+
+export type NavKey =
+  | "home"
+  | "about"
+  | "services"
+  | "personalBranding"
+  | "creativeStudio"
+  | "projects"
+  | "blog"
+  | "faqs"
+  | "contact";
+
 export type NavLink = {
+  /** Path without a language prefix. */
   href: string;
-  label: string;
-  /** Compact label for the desktop bar, where space is tight. */
-  shortLabel?: string;
+  /** Key into the dictionary's `nav` (and `navShort`) labels. */
+  key: NavKey;
   /** Hide from the desktop bar below the xl breakpoint (still in mobile menu + footer). */
   xlOnly?: boolean;
 };
 
 export const navLinks: readonly NavLink[] = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/services", label: "Services" },
-  { href: "/personal-branding", label: "Personal Branding", shortLabel: "Personal Brand", xlOnly: true },
-  { href: "/creative-studio", label: "Creative Studio", shortLabel: "Studio", xlOnly: true },
-  { href: "/projects", label: "Projects" },
-  { href: "/blog", label: "Blog" },
-  { href: "/faqs", label: "FAQs" },
-  { href: "/contact", label: "Contact" },
+  { href: "/", key: "home" },
+  { href: "/about", key: "about" },
+  { href: "/services", key: "services" },
+  { href: "/personal-branding", key: "personalBranding", xlOnly: true },
+  { href: "/creative-studio", key: "creativeStudio", xlOnly: true },
+  { href: "/projects", key: "projects" },
+  { href: "/blog", key: "blog" },
+  { href: "/faqs", key: "faqs" },
+  { href: "/contact", key: "contact" },
 ];
 
 /** Static pages included in the sitemap, with relative priority. */

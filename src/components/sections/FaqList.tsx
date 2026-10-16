@@ -16,7 +16,7 @@ export function FaqList({ faqs }: { faqs: Faq[] }) {
               <Icon name="plus" className="h-4 w-4" />
             </span>
           </summary>
-          <p className="pb-6 pr-10 leading-relaxed text-ink-soft">{faq.answer}</p>
+          <p className="pb-6 pe-10 leading-relaxed text-ink-soft">{faq.answer}</p>
         </details>
       ))}
     </div>

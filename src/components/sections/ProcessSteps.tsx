@@ -1,7 +1,9 @@
-import { processSteps } from "@/content/services";
+import { getProcessSteps } from "@/content/localized";
+import type { Locale } from "@/i18n/config";
 
 /** Numbered 4-step "how we work" list with a connecting line on desktop. */
-export function ProcessSteps({ invert }: { invert?: boolean }) {
+export function ProcessSteps({ invert, lang = "en" }: { invert?: boolean; lang?: Locale }) {
+  const processSteps = getProcessSteps(lang);
   return (
     <div className="relative">
       <div

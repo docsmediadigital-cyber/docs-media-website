@@ -48,10 +48,22 @@ Note: the rate limiter is per server instance (best effort on serverless hosting
 
 Per-page titles, descriptions, canonical URLs, Open Graph/Twitter cards, `sitemap.xml` (auto-includes posts and projects), `robots.txt` (blocks `/api/`), JSON-LD (Service + WebPage for the Personal Branding and Creative Studio pages, Organization, WebSite, BreadcrumbList, ItemList/Service, FAQPage, BlogPosting, ContactPage), real HTTP 404s for unknown blog/project slugs (`src/proxy.ts`), semantic headings, skip link, self-hosted fonts.
 
-## SEO for Indian customers
+## SEO
 
-See `docs/SEO-BACKLINK-STRATEGY.md` for the link-building plan (genuine listings, guest posts, industry links; no paid or spam links). On-site SEO is driven by `src/lib/site.ts` (`seoKeywords`, `areaServed`, `schemaLogo`), `src/lib/seo.ts` (metadata + JSON-LD) and per-page `buildMetadata()` calls. Optional env vars `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` and `NEXT_PUBLIC_BING_SITE_VERIFICATION` add search-console verification tags.
+See `docs/SEO-BACKLINK-STRATEGY.md` for the link-building plan (genuine listings, guest posts, industry links; no paid or spam links). On-site SEO is driven by `src/lib/site.ts` (`seoKeywords`, `schemaLogo`), `src/lib/seo.ts` (metadata + JSON-LD) and per-page `buildMetadata()` calls. Optional env vars `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` and `NEXT_PUBLIC_BING_SITE_VERIFICATION` add search-console verification tags.
 
 ## Next.js 16 notes
 
 This project enables Cache Components (`next.config.ts`). Prerendered code must not call `new Date()`/`Date.now()`/`Math.random()`; the sitemap and footer therefore use constants (`CONTENT_LAST_UPDATED`, `copyrightYear` in `src/lib/site.ts` — update them as content changes). `generateStaticParams` must return at least one param, which is why `projects/[slug]` returns a sentinel while the project list is empty.
+
+
+## Languages (English + Arabic)
+
+- English lives at the normal URLs (`/about`); Arabic lives under `/ar` (`/ar/about`) and renders right-to-left.
+- Files are routed as `src/app/[lang]/...`; `src/proxy.ts` rewrites English URLs to `/en/...` internally and redirects `/en/...` to the plain URL.
+- UI text: `src/i18n/en.ts` and `src/i18n/ar.ts` (Arabic must have every key English has, enforced by TypeScript).
+- Arabic content: `src/content/ar.ts` (services, FAQs, process, principles, the two landing pages, blog titles/summaries). Use `src/content/localized.ts` accessors.
+- Blog articles are English only. The Arabic blog index shows Arabic titles and links to the English articles; individual `/ar/blog/<slug>` URLs return 404.
+- SEO: each page sets `lang`/`dir`, a self-referencing canonical and `hreflang` alternates (en, ar, x-default); the sitemap lists both languages.
+- Arabic font: `@fontsource-variable/noto-sans-arabic` (run `npm install` after pulling this change).
+- Have the Arabic copy reviewed by a native speaker before launch.

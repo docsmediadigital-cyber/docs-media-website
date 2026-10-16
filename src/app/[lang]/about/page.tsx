@@ -5,29 +5,42 @@ import { Section, SectionHeading } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
 import { ProcessSteps } from "@/components/sections/ProcessSteps";
 import { CtaBanner } from "@/components/sections/CtaBanner";
-import { principles, services } from "@/content/services";
+import { getPrinciples, getServices } from "@/content/localized";
+import { getDictionary } from "@/i18n/dictionary";
+import { localePath } from "@/i18n/config";
+import { resolveLang, type LangProps } from "@/i18n/params";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { aboutPageJsonLd, buildMetadata } from "@/lib/seo";
 
 const linkClass =
   "font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-900";
 
-export const metadata: Metadata = buildMetadata({
-  title: "About Us — Digital Marketing Agency in India",
-  description:
-    "Meet DOCS MEDIA, a digital marketing agency for Indian businesses. Clear goals, honest expectations and measurable Meta Ads, SEO, website and Shopify work.",
-  path: "/about",
-  keywords: ["about DOCS MEDIA", "digital marketing company India"],
-});
+export async function generateMetadata({ params }: LangProps): Promise<Metadata> {
+  const lang = await resolveLang(params);
+  const a = getDictionary(lang).about;
+  return buildMetadata({
+    title: a.metaTitle,
+    description: a.metaDescription,
+    path: "/about",
+    keywords: a.keywords,
+    lang,
+  });
+}
 
-export default function AboutPage() {
+export default async function AboutPage({ params }: LangProps) {
+  const lang = await resolveLang(params);
+  const t = getDictionary(lang);
+  const a = t.about;
+  const services = getServices(lang);
+  const principles = getPrinciples(lang);
   return (
     <>
-      <JsonLd data={aboutPageJsonLd()} />
+      <JsonLd data={aboutPageJsonLd(lang)} />
       <PageHero
-        title="About DOCS MEDIA: digital marketing for Indian brands"
-        description="A digital marketing agency focused on helping businesses across India show up online, earn attention and turn it into enquiries and orders."
-        crumbs={[{ name: "About", path: "/about" }]}
+        lang={lang}
+        title={a.title}
+        description={a.description}
+        crumbs={[{ name: a.crumb, path: "/about" }]}
       />
 
       <Section labelledBy="who-title">
@@ -35,46 +48,33 @@ export default function AboutPage() {
           <div>
             <SectionHeading
               id="who-title"
-              eyebrow="Who we are"
-              title="Marketing built around your goals"
+              eyebrow={a.whoEyebrow}
+              title={a.whoTitle}
             />
             <div className="space-y-5 text-lg leading-relaxed text-ink-soft">
+              <p>{a.p1}</p>
+              <p>{a.p2}</p>
+              <p>{a.p3}</p>
               <p>
-                DOCS MEDIA is a digital marketing agency working with businesses
-                across India. We combine strategy, creative and technical know-how
-                so your social media, Meta Ads, search presence, website and
-                Shopify store all work toward the same outcome.
-              </p>
-              <p>
-                We believe good marketing starts with understanding your business:
-                who you want to reach, what you offer and what success looks like.
-                From there we plan, create, launch and keep improving, reporting
-                clearly along the way.
-              </p>
-              <p>
-                We would rather set honest expectations than make big promises, and
-                we treat your budget as if it were our own.
-              </p>
-              <p>
-                See everything we offer on our{" "}
-                <Link href="/services" className={linkClass}>
-                  digital marketing services
+                {a.seeA}{" "}
+                <Link href={localePath(lang, "/services")} className={linkClass}>
+                  {a.servicesLink}
                 </Link>{" "}
-                page, learn from our{" "}
-                <Link href="/blog" className={linkClass}>
-                  marketing guides
+                {a.pageLearn}{" "}
+                <Link href={localePath(lang, "/blog")} className={linkClass}>
+                  {a.guidesLink}
                 </Link>
-                , or{" "}
-                <Link href="/contact" className={linkClass}>
-                  get in touch
+                {a.orWord}{" "}
+                <Link href={localePath(lang, "/contact")} className={linkClass}>
+                  {a.contactLink}
                 </Link>{" "}
-                to talk about your goals.
+                {a.toTalk}
               </p>
             </div>
           </div>
 
           <div className="rounded-3xl border border-brand-200 bg-lavender p-8 sm:p-10">
-            <h3 className="font-display text-xl font-bold">What we cover</h3>
+            <h3 className="font-display text-xl font-bold">{a.cover}</h3>
             <ul className="mt-6 grid gap-4">
               {services.map((s) => (
                 <li key={s.slug} className="flex items-start gap-4">
@@ -95,8 +95,8 @@ export default function AboutPage() {
       <Section tone="lavender" labelledBy="values-title">
         <SectionHeading
           id="values-title"
-          eyebrow="Our principles"
-          title="What you can expect when you work with us"
+          eyebrow={a.valuesEyebrow}
+          title={a.valuesTitle}
         />
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {principles.map((p) => (
@@ -117,14 +117,14 @@ export default function AboutPage() {
       <Section labelledBy="process-title">
         <SectionHeading
           id="process-title"
-          eyebrow="Our process"
-          title="How a project runs"
-          description="The same four stages, whether you need a campaign, a content plan or a new website."
+          eyebrow={a.processEyebrow}
+          title={a.processTitle}
+          description={a.processText}
         />
-        <ProcessSteps />
+        <ProcessSteps lang={lang} />
       </Section>
 
-      <CtaBanner whatsappMessage="Hi DOCS MEDIA, I read your About page and I'd like to talk about working together." />
+      <CtaBanner lang={lang} whatsappMessage={t.wa.about} />
     </>
   );
 }

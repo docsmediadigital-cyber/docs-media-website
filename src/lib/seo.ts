@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { seoKeywords, siteConfig, SITE_URL } from "@/lib/site";
+import { mapsUrl, seoKeywords, siteConfig, SITE_URL } from "@/lib/site";
 import { absoluteUrl, socialEntries } from "@/lib/utils";
+import { localeMeta, localePath, type Locale } from "@/i18n/config";
 
 /**
  * A page-level `openGraph`/`twitter` object REPLACES the parent's (Next.js merges
@@ -25,10 +26,14 @@ type PageSeo = {
   /** Extra page-specific keywords, merged with the site-wide list. */
   keywords?: string[];
   noindex?: boolean;
+  /** Page language. Defaults to English. */
+  lang?: Locale;
+  /** False for pages that exist in one language only (blog posts): no Arabic alternate is declared. */
+  translated?: boolean;
 };
 
 /**
- * Per-page metadata with canonical URL, en-IN hreflang, Open Graph and Twitter
+ * Per-page metadata with canonical URL, en hreflang, Open Graph and Twitter
  * cards. The OG image is supplied by src/app/opengraph-image.tsx.
  */
 export function buildMetadata({
@@ -40,21 +45,26 @@ export function buildMetadata({
   modifiedTime,
   keywords,
   noindex,
+  lang = "en",
+  translated = true,
 }: PageSeo): Metadata {
+  const localized = localePath(lang, path);
   return {
     title,
     description,
     keywords: [...(keywords ?? []), ...seoKeywords],
     alternates: {
-      canonical: path,
-      languages: { "en-IN": path, "x-default": path },
+      canonical: localized,
+      languages: translated
+        ? { "en": path, ar: localePath("ar", path), "x-default": path }
+        : { [localeMeta[lang].hreflang]: localized },
     },
     openGraph: {
       title,
       description,
-      url: path,
+      url: localized,
       siteName: siteConfig.name,
-      locale: siteConfig.locale,
+      locale: localeMeta[lang].ogLocale,
       type,
       images: ogImages,
       ...(type === "article" && publishedTime
@@ -76,8 +86,6 @@ export function buildMetadata({
 const ORG_ID = `${SITE_URL}/#organization`;
 const SITE_ID = `${SITE_URL}/#website`;
 
-const areaServed = { "@type": "Country", name: siteConfig.areaServed };
-
 /** Inline publisher/author node (also carries the logo Google may display). */
 function publisherNode() {
   return {
@@ -95,9 +103,9 @@ function publisherNode() {
 }
 
 /**
- * Organization + ProfessionalService. Deliberately NO street address, ratings
- * or review markup: none exist yet, and schema must describe real, visible
- * facts. Add `address` (and sameAs profiles in site.ts) once they are real.
+ * Organization + ProfessionalService. The postal address matches the one shown
+ * on the Contact page and in the footer. Deliberately NO ratings or review
+ * markup: none exist yet, and schema must describe real, visible facts.
  */
 export function organizationJsonLd() {
   const sameAs = socialEntries().map((s) => s.url);
@@ -111,7 +119,15 @@ export function organizationJsonLd() {
     description: siteConfig.description,
     logo: publisherNode().logo,
     image: absoluteUrl("/opengraph-image"),
-    areaServed,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: siteConfig.address.streetAddress,
+      addressLocality: siteConfig.address.locality,
+      addressRegion: siteConfig.address.region,
+      postalCode: siteConfig.address.postalCode,
+      addressCountry: siteConfig.address.countryCode,
+    },
+    hasMap: mapsUrl,
     serviceType: [
       "Digital marketing",
       "Meta Ads management",
@@ -129,7 +145,6 @@ export function organizationJsonLd() {
         "@type": "ContactPoint",
         contactType: "customer support",
         telephone: `+${siteConfig.whatsapp.number}`,
-        areaServed: "IN",
         availableLanguage: ["English"],
         ...(siteConfig.email ? { email: siteConfig.email } : {}),
       },
@@ -137,7 +152,7 @@ export function organizationJsonLd() {
   };
 }
 
-export function websiteJsonLd() {
+export function websiteJsonLd(lang: Locale = "en") {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -145,12 +160,12 @@ export function websiteJsonLd() {
     url: SITE_URL,
     name: siteConfig.name,
     description: siteConfig.description,
-    inLanguage: siteConfig.language,
+    inLanguage: localeMeta[lang].htmlLang,
     publisher: { "@id": ORG_ID },
   };
 }
 
-export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
+export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>, lang: Locale = "en") {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -158,7 +173,7 @@ export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: absoluteUrl(item.path),
+      item: absoluteUrl(localePath(lang, item.path)),
     })),
   };
 }
@@ -176,7 +191,8 @@ export function faqJsonLd(faqs: Array<{ question: string; answer: string }>) {
 }
 
 export function serviceListJsonLd(
-  services: Array<{ title: string; summary: string; slug: string }>,
+  services: Array<{ title: string; summary: string; slug: string; href?: string }>,
+  lang: Locale = "en",
 ) {
   return {
     "@context": "https://schema.org",
@@ -188,22 +204,21 @@ export function serviceListJsonLd(
         "@type": "Service",
         name: s.title,
         description: s.summary,
-        url: absoluteUrl(`/services#${s.slug}`),
+        url: absoluteUrl(localePath(lang, s.href ?? `/services#${s.slug}`)),
         serviceType: s.title,
-        areaServed,
         provider: { "@id": ORG_ID },
       },
     })),
   };
 }
 
-export function aboutPageJsonLd() {
+export function aboutPageJsonLd(lang: Locale = "en") {
   return {
     "@context": "https://schema.org",
     "@type": "AboutPage",
     name: `About ${siteConfig.name}`,
-    url: absoluteUrl("/about"),
-    inLanguage: siteConfig.language,
+    url: absoluteUrl(localePath(lang, "/about")),
+    inLanguage: localeMeta[lang].htmlLang,
     isPartOf: { "@id": SITE_ID },
     about: { "@id": ORG_ID },
   };
@@ -215,14 +230,16 @@ export function collectionPageJsonLd(opts: {
   description: string;
   path: string;
   itemPaths: string[];
+  lang?: Locale;
 }) {
+  const lang = opts.lang ?? "en";
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: opts.name,
     description: opts.description,
-    url: absoluteUrl(opts.path),
-    inLanguage: siteConfig.language,
+    url: absoluteUrl(localePath(lang, opts.path)),
+    inLanguage: localeMeta[lang].htmlLang,
     isPartOf: { "@id": SITE_ID },
     ...(opts.itemPaths.length
       ? {
@@ -231,7 +248,7 @@ export function collectionPageJsonLd(opts: {
             itemListElement: opts.itemPaths.map((p, i) => ({
               "@type": "ListItem",
               position: i + 1,
-              url: absoluteUrl(p),
+              url: absoluteUrl(localePath(lang, p)),
             })),
           },
         }
@@ -241,15 +258,16 @@ export function collectionPageJsonLd(opts: {
 
 export function blogJsonLd(
   posts: Array<{ title: string; slug: string; date: string; description: string }>,
+  lang: Locale = "en",
 ) {
   return {
     "@context": "https://schema.org",
     "@type": "Blog",
     name: `${siteConfig.name} blog`,
     description:
-      "Practical guides on Meta Ads, SEO, Shopify, websites and social media for Indian businesses.",
-    url: absoluteUrl("/blog"),
-    inLanguage: siteConfig.language,
+      "Practical guides on Meta Ads, SEO, Shopify, websites and social media for businesses.",
+    url: absoluteUrl(localePath(lang, "/blog")),
+    inLanguage: localeMeta[lang].htmlLang,
     publisher: { "@id": ORG_ID },
     blogPost: posts.map((p) => ({
       "@type": "BlogPosting",
@@ -294,14 +312,14 @@ export function projectJsonLd(project: {
   slug: string;
   year?: number;
   coverImage?: { src: string };
-}) {
+}, lang: Locale = "en") {
   return {
     "@context": "https://schema.org",
     "@type": "CreativeWork",
     name: project.title,
     description: project.summary,
-    url: absoluteUrl(`/projects/${project.slug}`),
-    inLanguage: siteConfig.language,
+    url: absoluteUrl(localePath(lang, `/projects/${project.slug}`)),
+    inLanguage: localeMeta[lang].htmlLang,
     ...(project.year ? { dateCreated: String(project.year) } : {}),
     ...(project.coverImage ? { image: absoluteUrl(project.coverImage.src) } : {}),
     creator: { "@id": ORG_ID },
@@ -312,15 +330,18 @@ export function projectJsonLd(project: {
  * Service + WebPage schema for a dedicated service landing page. Describes only
  * what the page says: no ratings, prices or client claims.
  */
-export function focusPageJsonLd(page: {
+export function focusPageJsonLd(
+  page: {
   name: string;
   path: string;
   metaDescription: string;
   h1: string;
   offerings: Array<{ title: string }>;
   image?: { src: string };
-}) {
-  const url = absoluteUrl(page.path);
+  },
+  lang: Locale = "en",
+) {
+  const url = absoluteUrl(localePath(lang, page.path));
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -330,7 +351,7 @@ export function focusPageJsonLd(page: {
         url,
         name: page.h1,
         description: page.metaDescription,
-        inLanguage: siteConfig.language,
+        inLanguage: localeMeta[lang].htmlLang,
         isPartOf: { "@id": SITE_ID },
         about: { "@id": `${url}#service` },
         ...(page.image
@@ -344,7 +365,6 @@ export function focusPageJsonLd(page: {
         serviceType: page.name,
         description: page.metaDescription,
         url,
-        areaServed,
         provider: { "@id": ORG_ID },
         hasOfferCatalog: {
           "@type": "OfferCatalog",

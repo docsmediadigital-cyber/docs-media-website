@@ -172,17 +172,17 @@ const posts: BlogPost[] = [
     ],
   },
   {
-    slug: "shopify-store-launch-checklist-india",
-    title: "Shopify store launch checklist for Indian businesses",
+    slug: "shopify-store-launch-checklist",
+    title: "Shopify store launch checklist",
     description:
-      "A practical pre-launch checklist for a Shopify store in India: products, INR pricing, payments, shipping, policies, SEO, tracking and a test order.",
+      "A practical pre-launch checklist for a Shopify store: products, INR pricing, payments, shipping, policies, SEO, tracking and a test order.",
     date: "2026-10-15",
     category: "Shopify",
     relatedServices: ["website-and-landing-pages", "seo", "performance-marketing"],
     body: [
       {
         type: "p",
-        text: "Launching a Shopify store is more than adding products and publishing. Customers in India compare options quickly on their phones, so small gaps in pricing, delivery information or trust signals cost orders. Use this checklist before you go live.",
+        text: "Launching a Shopify store is more than adding products and publishing. Customers compare options quickly on their phones, so small gaps in pricing, delivery information or trust signals cost orders. Use this checklist before you go live.",
       },
       { type: "h2", text: "1. Get the product pages right" },
       {
@@ -194,10 +194,10 @@ const posts: BlogPost[] = [
           "Add descriptive alt text to product images.",
         ],
       },
-      { type: "h2", text: "2. Set prices, tax and payments for India" },
+      { type: "h2", text: "2. Set prices, tax and payments" },
       {
         type: "p",
-        text: "Show prices in INR and confirm with your accountant how GST should appear on prices and invoices for your business. Then decide which payment methods to offer. Indian shoppers commonly expect UPI and cards, and many also look for cash on delivery. Availability depends on the payment gateways that Shopify supports for your business, so check this early rather than the day before launch.",
+        text: "Show prices in INR and confirm with your accountant how GST should appear on prices and invoices for your business. Then decide which payment methods to offer. Shoppers commonly expect UPI and cards, and many also look for cash on delivery. Availability depends on the payment gateways that Shopify supports for your business, so check this early rather than the day before launch.",
       },
       { type: "h2", text: "3. Make shipping and delivery clear" },
       {
@@ -211,7 +211,7 @@ const posts: BlogPost[] = [
       { type: "h2", text: "4. Add trust pages and policies" },
       {
         type: "p",
-        text: "Publish shipping, returns, privacy and terms pages, along with clear contact details and your business information. Buyers use these to decide whether a small store is safe to order from, and Indian e-commerce consumer rules expect sellers to be transparent. Check the current requirements for your business type.",
+        text: "Publish shipping, returns, privacy and terms pages, along with clear contact details and your business information. Buyers use these to decide whether a small store is safe to order from, and E-commerce consumer rules expect sellers to be transparent. Check the current requirements for your business type.",
       },
       { type: "h2", text: "5. Cover the SEO basics" },
       {
@@ -241,17 +241,17 @@ const posts: BlogPost[] = [
     ],
   },
   {
-    slug: "click-to-whatsapp-ads-indian-businesses",
-    title: "Click-to-WhatsApp ads for Indian businesses",
+    slug: "click-to-whatsapp-ads-for-businesses",
+    title: "Click-to-WhatsApp ads for businesses",
     description:
-      "How Indian businesses can use Click-to-WhatsApp ads on Facebook and Instagram: when they fit, how to set them up and how to measure real results.",
+      "How businesses can use Click-to-WhatsApp ads on Facebook and Instagram: when they fit, how to set them up and how to measure real results.",
     date: "2026-10-14",
     category: "Paid Ads",
     relatedServices: ["performance-marketing", "website-and-landing-pages"],
     body: [
       {
         type: "p",
-        text: "In India, many customers prefer to ask a question on WhatsApp before they buy or book. Click-to-WhatsApp ads are Meta ads on Facebook and Instagram that open a WhatsApp chat with your business when someone taps the button, instead of sending them to a website form.",
+        text: "Many customers prefer to ask a question on WhatsApp before they buy or book. Click-to-WhatsApp ads are Meta ads on Facebook and Instagram that open a WhatsApp chat with your business when someone taps the button, instead of sending them to a website form.",
       },
       { type: "h2", text: "When Click-to-WhatsApp ads make sense" },
       {

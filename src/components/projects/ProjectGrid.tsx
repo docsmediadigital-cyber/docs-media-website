@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/content/projects";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/config";
 
 type Filter = { slug: string; label: string };
 
@@ -15,10 +17,13 @@ type Filter = { slug: string; label: string };
 export function ProjectGrid({
   projects,
   filters,
+  lang = "en",
 }: {
   projects: Project[];
   filters: Filter[];
+  lang?: Locale;
 }) {
+  const t = getDictionary(lang).project;
   const [active, setActive] = useState<string>("all");
 
   const visible = useMemo(
@@ -54,7 +59,7 @@ export function ProjectGrid({
           aria-label="Filter projects by service"
           className="mb-10 flex flex-wrap gap-2"
         >
-          {chip("all", "All")}
+          {chip("all", t.filterAll)}
           {filters.map((f) => chip(f.slug, f.label))}
         </div>
       )}
@@ -62,7 +67,7 @@ export function ProjectGrid({
       <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-live="polite">
         {visible.map((project) => (
           <li key={project.slug} className="relative">
-            <ProjectCard project={project} />
+            <ProjectCard project={project} lang={lang} />
           </li>
         ))}
       </ul>
