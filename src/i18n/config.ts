@@ -25,10 +25,13 @@ export function localePath(lang: Locale, path: string): string {
   return path === "/" ? `/${lang}` : `/${lang}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-/** Remove a leading /ar (or other locale) from a browser pathname. */
+/**
+ * Remove a leading locale (/ar, or /en) from a pathname. /en must be stripped too:
+ * on the server, English pages see the proxy's internal path (/en/about), and
+ * keeping it produced broken /ar/en/about links in the prerendered HTML.
+ */
 export function stripLocale(pathname: string): string {
   for (const l of locales) {
-    if (l === defaultLocale) continue;
     if (pathname === `/${l}`) return "/";
     if (pathname.startsWith(`/${l}/`)) return pathname.slice(l.length + 1);
   }
