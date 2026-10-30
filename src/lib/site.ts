@@ -10,8 +10,15 @@
 
 const rawUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
-/** Canonical origin, no trailing slash. Falls back to localhost for local dev. */
-export const SITE_URL = (rawUrl && rawUrl.length > 0 ? rawUrl : "http://localhost:3000").replace(
+/** Live domain. Used when NEXT_PUBLIC_SITE_URL is not set. */
+export const PRODUCTION_URL = "https://www.connectdocsmedia.com";
+
+/**
+ * Canonical origin, no trailing slash. Falls back to the live domain (never
+ * localhost) so a missing env var can't ship localhost canonicals, hreflang or
+ * sitemap URLs to search engines.
+ */
+export const SITE_URL = (rawUrl && rawUrl.length > 0 ? rawUrl : PRODUCTION_URL).replace(
   /\/+$/,
   "",
 );

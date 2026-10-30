@@ -15,7 +15,7 @@ npm run build && npm start   # production
 
 ## Before going live
 
-1. **Set the domain** — `NEXT_PUBLIC_SITE_URL=https://your-domain.com` (no trailing slash). It drives canonical URLs, `sitemap.xml`, `robots.txt`, Open Graph and structured data. Without it, those use `http://localhost:3000`. Rebuild after changing it (the value is read at build time).
+1. **Set the domain** — `NEXT_PUBLIC_SITE_URL=https://your-domain.com` (no trailing slash). It drives canonical URLs, `sitemap.xml`, `robots.txt`, Open Graph and structured data. Without it, those default to `https://www.connectdocsmedia.com` (`PRODUCTION_URL` in `src/lib/site.ts`). Rebuild after changing it (the value is read at build time).
 2. **Add the real logo** — put the file in `public/` and set `siteConfig.logo.src` in `src/lib/site.ts`. The official logo is already set (`public/logo.png`, white on transparent; a purple version is in `public/logo-purple.png`).
 3. **Add genuine projects** — edit `src/content/projects.ts`. The list is empty on purpose; the site shows an honest "coming soon" state. Each entry creates a card, filter chip, detail page and sitemap URL. Only add clients/metrics you have permission and real data for.
 4. **Configure enquiry delivery** (see below).
@@ -46,7 +46,7 @@ Note: the rate limiter is per server instance (best effort on serverless hosting
 
 ## SEO included
 
-Per-page titles, descriptions, canonical URLs, Open Graph/Twitter cards, `sitemap.xml` (auto-includes posts and projects), `robots.txt` (blocks `/api/`), JSON-LD (Service + WebPage for the Personal Branding and Creative Studio pages, Organization, WebSite, BreadcrumbList, ItemList/Service, FAQPage, BlogPosting, ContactPage), real HTTP 404s for unknown blog/project slugs (`src/proxy.ts`), semantic headings, skip link, self-hosted fonts.
+Per-page titles, descriptions, canonical URLs, Open Graph/Twitter cards, `sitemap.xml` (auto-includes posts and projects), `robots.txt` (blocks `/api/`), `manifest.webmanifest`, `/llms.txt` (AI-search summary built from `src/content/`), JSON-LD (Service + WebPage for the Personal Branding and Creative Studio pages, Organization, WebSite, BreadcrumbList, ItemList/Service, FAQPage, BlogPosting, ContactPage), real HTTP 404s for unknown blog/project slugs (`src/proxy.ts`), semantic headings, skip link, self-hosted fonts.
 
 ## SEO
 

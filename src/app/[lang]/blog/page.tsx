@@ -29,7 +29,7 @@ export default async function BlogPage({ params }: LangProps) {
 
   return (
     <>
-      <JsonLd data={blogJsonLd(blogPosts, lang)} />
+      <JsonLd data={blogJsonLd(blogPosts, lang, b.metaDescription)} />
       <PageHero
         lang={lang}
         title={b.title}
