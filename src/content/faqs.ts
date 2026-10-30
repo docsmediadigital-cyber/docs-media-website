@@ -19,7 +19,7 @@ export const faqs: Faq[] = [
   {
     question: "Do you work with businesses in any location?",
     answer:
-      "Yes. We help businesses wherever they are based with digital marketing, websites and Shopify stores. Most conversations start on WhatsApp or through the contact form, so you do not need to be in the same city as us.",
+      "Yes. Our office is in Kanhangad, Kerala, and we can meet businesses across Kasaragod district in person. We also help businesses wherever they are based with digital marketing, websites and Shopify stores. Most conversations start on WhatsApp or through the contact form, so you do not need to be in the same city as us.",
   },
   {
     question: "Can you build or set up a Shopify store for my business?",

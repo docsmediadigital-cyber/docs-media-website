@@ -3,6 +3,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Container } from "@/components/ui/Container";
 import { mapsUrl, navLinks, siteConfig } from "@/lib/site";
 import { getServices } from "@/content/localized";
+import { locationPages } from "@/content/locations";
 import { getDictionary } from "@/i18n/dictionary";
 import { localePath, type Locale } from "@/i18n/config";
 import { socialEntries, whatsappLink } from "@/lib/utils";
@@ -105,6 +106,22 @@ export function Footer({ lang }: { lang: Locale }) {
                   {siteConfig.address.lines.join(", ")}
                 </span>
               </a>
+            </li>
+            <li>
+              <span className="font-semibold text-white">{t.footer.areas}:</span>
+              <ul className="mt-1.5 space-y-1.5">
+                {locationPages.map((p) => (
+                  <li key={p.slug}>
+                    <Link
+                      href={p.path}
+                      hrefLang="en"
+                      className="text-brand-200 transition hover:text-white"
+                    >
+                      {p.linkLabel[lang]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </li>
             {siteConfig.email && (
               <li>

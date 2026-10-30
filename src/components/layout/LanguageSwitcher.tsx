@@ -2,20 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { hasTranslation, localePath, stripLocale, type Locale } from "@/i18n/config";
+import {
+  hasTranslation,
+  localePath,
+  stripLocale,
+  translationFallback,
+  type Locale,
+} from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionary";
 import { cn } from "@/lib/utils";
 
 /**
- * Links to the same page in the other language. Individual blog posts exist only
- * in English, so from a post the Arabic link goes to the Arabic blog index.
+ * Links to the same page in the other language. Blog posts and local landing
+ * pages exist only in English, so from those the Arabic link goes to the closest
+ * Arabic page (the blog index, or Contact for a local page).
  */
 export function LanguageSwitcher({ lang, className }: { lang: Locale; className?: string }) {
   const pathname = usePathname();
   const t = getDictionary(lang);
   const target: Locale = lang === "en" ? "ar" : "en";
   const base = stripLocale(pathname);
-  const path = hasTranslation(base) ? base : "/blog";
+  const path = hasTranslation(base) ? base : translationFallback(base);
 
   return (
     <Link

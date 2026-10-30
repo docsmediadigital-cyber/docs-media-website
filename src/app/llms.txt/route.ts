@@ -1,5 +1,6 @@
 import { blogPosts } from "@/content/blog";
 import { focusPages } from "@/content/focus-pages";
+import { locationPages } from "@/content/locations";
 import { services } from "@/content/services";
 import { siteConfig } from "@/lib/site";
 import { absoluteUrl } from "@/lib/utils";
@@ -26,6 +27,10 @@ export function GET() {
     `- [Projects](${absoluteUrl("/projects")})`,
     `- [FAQs](${absoluteUrl("/faqs")})`,
     `- [Contact](${absoluteUrl("/contact")})`,
+    "",
+    "## Local pages",
+    "",
+    ...locationPages.map((p) => `- [${p.linkLabel.en}](${absoluteUrl(p.path)}): ${p.metaDescription}`),
     "",
     "## Services",
     "",

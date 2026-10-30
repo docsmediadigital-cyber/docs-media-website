@@ -102,6 +102,16 @@ function publisherNode() {
   };
 }
 
+/** Places named in siteConfig.serviceArea, as schema.org nodes. */
+function areaServedJsonLd() {
+  const { city, district, region, country } = siteConfig.serviceArea;
+  const state = { "@type": "State", name: region, containedInPlace: { "@type": "Country", name: country } };
+  return [
+    { "@type": "City", name: city, containedInPlace: state },
+    { "@type": "AdministrativeArea", name: district, containedInPlace: state },
+  ];
+}
+
 /**
  * Organization + ProfessionalService. The postal address matches the one shown
  * on the Contact page and in the footer. Deliberately NO ratings or review
@@ -129,6 +139,7 @@ export function organizationJsonLd() {
     },
     hasMap: mapsUrl,
     telephone: `+${siteConfig.whatsapp.number}`,
+    areaServed: areaServedJsonLd(),
     serviceType: [
       "Digital marketing",
       "Meta Ads management",
@@ -373,6 +384,64 @@ export function focusPageJsonLd(
           itemListElement: page.offerings.map((o) => ({
             "@type": "Offer",
             itemOffered: { "@type": "Service", name: o.title },
+          })),
+        },
+      },
+    ],
+  };
+}
+
+/**
+ * WebPage + Service schema for a local landing page (English only). The Service
+ * covers the page's place and is provided by the Organization, whose address is
+ * the office in src/lib/site.ts. No ratings, prices or opening hours.
+ */
+export function locationPageJsonLd(page: {
+  path: string;
+  h1: string;
+  metaDescription: string;
+  place: string;
+  areaServed: { type: "City" | "AdministrativeArea"; name: string };
+  services: Array<{ title: string }>;
+}) {
+  const url = absoluteUrl(page.path);
+  const { region, country } = siteConfig.serviceArea;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: page.h1,
+        description: page.metaDescription,
+        inLanguage: "en",
+        isPartOf: { "@id": SITE_ID },
+        about: { "@id": `${url}#service` },
+      },
+      {
+        "@type": "Service",
+        "@id": `${url}#service`,
+        name: `Digital marketing in ${page.place}`,
+        serviceType: "Digital marketing",
+        description: page.metaDescription,
+        url,
+        provider: { "@id": ORG_ID },
+        areaServed: {
+          "@type": page.areaServed.type,
+          name: page.areaServed.name,
+          containedInPlace: {
+            "@type": "State",
+            name: region,
+            containedInPlace: { "@type": "Country", name: country },
+          },
+        },
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: `Digital marketing services in ${page.place}`,
+          itemListElement: page.services.map((s) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: s.title },
           })),
         },
       },

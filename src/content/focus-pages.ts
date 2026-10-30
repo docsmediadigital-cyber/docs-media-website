@@ -49,9 +49,9 @@ export const focusPages: FocusPage[] = [
     path: "/personal-branding",
     name: "Personal Branding",
     icon: "profile",
-    metaTitle: "Personal Branding Services for Founders & Creators",
+    metaTitle: "Personal Branding for Founders & Creators",
     metaDescription:
-      "Personal branding for founders, professionals, doctors, coaches and creators: brand positioning, LinkedIn and Instagram presence, content and a personal website.",
+      "Personal branding for founders, doctors, coaches and creators: brand positioning, LinkedIn and Instagram presence, content and a personal website.",
     keywords: [
       "personal branding services",
       "personal branding agency",

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/content/blog";
 import { projects } from "@/content/projects";
+import { locationPages } from "@/content/locations";
 import { localePath } from "@/i18n/config";
 import { CONTENT_LAST_UPDATED, staticRoutes } from "@/lib/site";
 import { absoluteUrl } from "@/lib/utils";
@@ -8,7 +9,7 @@ import { absoluteUrl } from "@/lib/utils";
 /**
  * XML sitemap generated from site config + content files, so new blog posts and
  * projects appear automatically. Every translated page is listed in English and
- * Arabic with hreflang alternates. Blog articles are English-only.
+ * Arabic with hreflang alternates. Blog articles and local pages are English-only.
  * URLs use NEXT_PUBLIC_SITE_URL.
  */
 function bilingual(path: string) {
@@ -36,6 +37,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ];
   });
 
+  const local: MetadataRoute.Sitemap = locationPages.map((page) => ({
+    url: absoluteUrl(page.path),
+    lastModified: CONTENT_LAST_UPDATED,
+    changeFrequency: "monthly",
+    priority: 0.8,
+  }));
+
   const posts: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: absoluteUrl(`/blog/${post.slug}`),
     lastModified: post.updated ?? post.date,
@@ -57,5 +65,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ];
   });
 
-  return [...pages, ...posts, ...work];
+  return [...pages, ...local, ...posts, ...work];
 }
