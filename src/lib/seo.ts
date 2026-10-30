@@ -128,6 +128,7 @@ export function organizationJsonLd() {
       addressCountry: siteConfig.address.countryCode,
     },
     hasMap: mapsUrl,
+    telephone: `+${siteConfig.whatsapp.number}`,
     serviceType: [
       "Digital marketing",
       "Meta Ads management",
@@ -145,7 +146,7 @@ export function organizationJsonLd() {
         "@type": "ContactPoint",
         contactType: "customer support",
         telephone: `+${siteConfig.whatsapp.number}`,
-        availableLanguage: ["English"],
+        availableLanguage: ["English", "Arabic"],
         ...(siteConfig.email ? { email: siteConfig.email } : {}),
       },
     ],
@@ -259,13 +260,13 @@ export function collectionPageJsonLd(opts: {
 export function blogJsonLd(
   posts: Array<{ title: string; slug: string; date: string; description: string }>,
   lang: Locale = "en",
+  description = "Practical guides on Meta Ads, SEO, Shopify, websites and social media for businesses.",
 ) {
   return {
     "@context": "https://schema.org",
     "@type": "Blog",
     name: `${siteConfig.name} blog`,
-    description:
-      "Practical guides on Meta Ads, SEO, Shopify, websites and social media for businesses.",
+    description,
     url: absoluteUrl(localePath(lang, "/blog")),
     inLanguage: localeMeta[lang].htmlLang,
     publisher: { "@id": ORG_ID },
