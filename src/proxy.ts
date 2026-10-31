@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { blogPosts } from "@/content/blog";
 import { projects } from "@/content/projects";
+import { locationPaths } from "@/content/location-paths";
 
 /**
  * Language routing + real 404s.
@@ -10,8 +11,8 @@ import { projects } from "@/content/projects";
  *    /en/... internally. A direct /en/... request is redirected to the plain URL
  *    so each page has one canonical address.
  *  - Blog and project URLs whose slug does not exist get a real HTTP 404 (not a
- *    streamed 200 + noindex "soft 404"). Blog articles exist in English only, so
- *    /ar/blog/<slug> is also a 404; the Arabic blog index links to the English URLs.
+ *    streamed 200 + noindex "soft 404"). Blog articles and the local landing pages
+ *    exist in English only, so /ar/blog/<slug> and /ar/<local page> are also 404s.
  */
 const blogSlugs = new Set(blogPosts.map((p) => p.slug));
 const projectSlugs = new Set(projects.map((p) => p.slug));
@@ -33,7 +34,8 @@ export function proxy(request: NextRequest) {
 
   const isMissing =
     (section === "blog" && slug && !(lang === "en" && blogSlugs.has(slug))) ||
-    (section === "projects" && slug && !projectSlugs.has(slug));
+    (section === "projects" && slug && !projectSlugs.has(slug)) ||
+    (lang === "ar" && locationPaths.has(rest));
 
   if (isMissing) {
     // No route matches, so the [lang]/[...rest] page renders the 404 with a 404 status.

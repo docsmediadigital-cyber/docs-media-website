@@ -19,13 +19,16 @@ export function generateStaticParams() {
 
 type Props = { params: Promise<{ lang: string; slug: string }> };
 
+/** Must match the root layout's title template ("%s | DOCS MEDIA"). */
+const TITLE_SUFFIX = " | DOCS MEDIA";
+
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const { slug, lang } = await props.params;
   const post = lang === "en" ? getPost(slug) : undefined;
   if (!post) {
     return { title: "Article not found", robots: { index: false, follow: false } };
   }
-  return buildMetadata({
+  const metadata = buildMetadata({
     title: post.title,
     description: post.description,
     path: `/blog/${post.slug}`,
@@ -35,6 +38,11 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     modifiedTime: post.updated,
     keywords: [post.category, post.title],
   });
+  // Search results cut titles at about 60 characters: drop the " | DOCS MEDIA"
+  // suffix when it would push a long article title past that.
+  return `${post.title}${TITLE_SUFFIX}`.length > 60
+    ? { ...metadata, title: { absolute: post.title } }
+    : metadata;
 }
 
 export default async function BlogPostPage(props: Props) {

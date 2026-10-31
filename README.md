@@ -28,6 +28,7 @@ npm run build && npm start   # production
 | WhatsApp number/URL, domain, nav, socials | `src/lib/site.ts` |
 | Services, process, FAQs, blog, projects | `src/content/*.ts` |
 | Personal Branding + Creative Studio pages (copy, FAQs, deliverables) | `src/content/focus-pages.ts` (rendered by `src/components/sections/FocusPageView.tsx`) |
+| Local landing pages: Kanhangad, Kasaragod (English only) | `src/content/locations.ts` (URLs in `location-paths.ts`; rendered by `src/components/sections/LocationPageView.tsx`) |
 | Page metadata + JSON-LD helpers | `src/lib/seo.ts` |
 | Sitemap / robots / social image | `src/app/sitemap.ts`, `robots.ts`, `opengraph-image.tsx` |
 | Reusable portfolio components | `src/components/projects/` (`ProjectCard`, `ProjectGrid`, `EmptyProjects`) |
@@ -46,7 +47,7 @@ Note: the rate limiter is per server instance (best effort on serverless hosting
 
 ## SEO included
 
-Per-page titles, descriptions, canonical URLs, Open Graph/Twitter cards, `sitemap.xml` (auto-includes posts and projects), `robots.txt` (blocks `/api/`), `manifest.webmanifest`, `/llms.txt` (AI-search summary built from `src/content/`), JSON-LD (Service + WebPage for the Personal Branding and Creative Studio pages, Organization, WebSite, BreadcrumbList, ItemList/Service, FAQPage, BlogPosting, ContactPage), real HTTP 404s for unknown blog/project slugs (`src/proxy.ts`), semantic headings, skip link, self-hosted fonts.
+Per-page titles, descriptions, canonical URLs, Open Graph/Twitter cards, `sitemap.xml` (auto-includes posts and projects), `robots.txt` (blocks `/api/`), `manifest.webmanifest`, `/llms.txt` (AI-search summary built from `src/content/`), JSON-LD (Service + WebPage for the Personal Branding and Creative Studio pages, Organization, WebSite, BreadcrumbList, ItemList/Service, FAQPage, BlogPosting, ContactPage), local landing pages for Kanhangad and Kasaragod with Service `areaServed` schema, Organization `areaServed` (`siteConfig.serviceArea`), real HTTP 404s for unknown blog/project slugs and the Arabic URLs of English-only pages (`src/proxy.ts`), semantic headings, skip link, self-hosted fonts.
 
 ## SEO
 
@@ -63,6 +64,7 @@ This project enables Cache Components (`next.config.ts`). Prerendered code must 
 - Files are routed as `src/app/[lang]/...`; `src/proxy.ts` rewrites English URLs to `/en/...` internally and redirects `/en/...` to the plain URL.
 - UI text: `src/i18n/en.ts` and `src/i18n/ar.ts` (Arabic must have every key English has, enforced by TypeScript).
 - Arabic content: `src/content/ar.ts` (services, FAQs, process, principles, the two landing pages, blog titles/summaries). Use `src/content/localized.ts` accessors.
+- Blog articles and the local landing pages (Kanhangad, Kasaragod) are English only; their `/ar/...` URLs return 404, and the language switcher sends Arabic readers to the blog index or the Contact page.
 - Blog articles are English only. The Arabic blog index shows Arabic titles and links to the English articles; individual `/ar/blog/<slug>` URLs return 404.
 - SEO: each page sets `lang`/`dir`, a self-referencing canonical and `hreflang` alternates (en, ar, x-default); the sitemap lists both languages.
 - Arabic font: `@fontsource-variable/noto-sans-arabic` (run `npm install` after pulling this change).

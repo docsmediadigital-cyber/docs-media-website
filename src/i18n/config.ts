@@ -1,3 +1,5 @@
+import { locationPaths } from "@/content/location-paths";
+
 /**
  * Languages. English is the default and lives at the plain URLs (/about);
  * Arabic lives under /ar (/ar/about) and is rendered right-to-left.
@@ -38,7 +40,15 @@ export function stripLocale(pathname: string): string {
   return pathname;
 }
 
-/** Pages that exist in every language (everything except individual blog posts). */
+/**
+ * Pages that exist in every language: everything except individual blog posts
+ * and the local landing pages (src/content/locations.ts), which are English only.
+ */
 export function hasTranslation(pathWithoutLocale: string): boolean {
-  return !/^\/blog\/[^/]+/.test(pathWithoutLocale);
+  return !/^\/blog\/[^/]+/.test(pathWithoutLocale) && !locationPaths.has(pathWithoutLocale);
+}
+
+/** Closest page in the other language for an English-only page. */
+export function translationFallback(pathWithoutLocale: string): string {
+  return locationPaths.has(pathWithoutLocale) ? "/contact" : "/blog";
 }

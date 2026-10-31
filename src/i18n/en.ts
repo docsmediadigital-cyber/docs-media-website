@@ -3,7 +3,7 @@ export const en = {
   name: "DOCS MEDIA",
   tagline: "Digital marketing agency",
   description:
-    "DOCS MEDIA is a digital marketing agency for businesses: Meta Ads, social media marketing, SEO, website development, Shopify stores and creative content.",
+    "DOCS MEDIA is a digital marketing agency in Kanhangad, Kerala: Meta Ads, social media marketing, SEO, website development, Shopify stores and creative content.",
   titleSuffixHome: "Digital Marketing & Shopify Agency",
   nav: {
     home: "Home",
@@ -62,6 +62,7 @@ export const en = {
     services: "Services",
     getInTouch: "Get in touch",
     visit: "Visit us",
+    areas: "Areas we serve",
     whatsapp: "WhatsApp",
     rights: "All rights reserved.",
   },
@@ -76,7 +77,7 @@ export const en = {
     heroTitleA: "Digital marketing that gets your brand",
     heroTitleB: "noticed and remembered.",
     heroText:
-      "DOCS MEDIA helps businesses grow online with Meta Ads, social media marketing, SEO, creative content, website development and Shopify stores built to turn visitors into enquiries and orders.",
+      "DOCS MEDIA is a digital marketing agency in Kanhangad, Kerala, helping businesses grow online with Meta Ads, social media marketing, SEO, creative content, website development and Shopify stores built to turn visitors into enquiries and orders.",
     startWhatsApp: "Start on WhatsApp",
     exploreServices: "Explore our services",
     checks: ["Clear goals", "Honest expectations", "Regular reporting"],
@@ -108,7 +109,7 @@ export const en = {
   about: {
     metaTitle: "About Us — Digital Marketing Agency",
     metaDescription:
-      "Meet DOCS MEDIA, a digital marketing agency for businesses. Clear goals, honest expectations and measurable Meta Ads, SEO, website and Shopify work.",
+      "Meet DOCS MEDIA, a digital marketing agency in Kanhangad, Kerala. Clear goals, honest expectations and measurable Meta Ads, SEO, website and Shopify work.",
     keywords: ["about DOCS MEDIA", "digital marketing company"],
     crumb: "About",
     title: "About DOCS MEDIA: digital marketing for brands",
@@ -116,7 +117,7 @@ export const en = {
       "A digital marketing agency focused on helping businesses show up online, earn attention and turn it into enquiries and orders.",
     whoEyebrow: "Who we are",
     whoTitle: "Marketing built around your goals",
-    p1: "DOCS MEDIA is a digital marketing agency working with businesses of all sizes. We combine strategy, creative and technical know-how so your social media, Meta Ads, search presence, website and Shopify store all work toward the same outcome.",
+    p1: "DOCS MEDIA is a digital marketing agency based in Kanhangad, Kerala, working with businesses of all sizes across Kasaragod district and beyond. We combine strategy, creative and technical know-how so your social media, Meta Ads, search presence, website and Shopify store all work toward the same outcome.",
     p2: "We believe good marketing starts with understanding your business: who you want to reach, what you offer and what success looks like. From there we plan, create, launch and keep improving, reporting clearly along the way.",
     p3: "We would rather set honest expectations than make big promises, and we treat your budget as if it were our own.",
     seeA: "See everything we offer on our",
@@ -184,7 +185,7 @@ export const en = {
   contactPage: {
     metaTitle: "Contact Us — Marketing & Website Enquiries",
     metaDescription:
-      "Contact DOCS MEDIA on WhatsApp or send an enquiry about Meta Ads, SEO, social media marketing, website development and Shopify stores.",
+      "Contact DOCS MEDIA on WhatsApp, visit our office at CA MALL, Kanhangad, or send an enquiry about Meta Ads, SEO, social media, websites and Shopify.",
     keywords: ["contact digital marketing agency", "get a marketing quote"],
     crumb: "Contact",
     schemaName: "Contact DOCS MEDIA",
@@ -195,6 +196,8 @@ export const en = {
     otherWays: "Other ways to reach us",
     visitTitle: "Visit our office",
     openMap: "Open in Google Maps",
+    localTitle: "Serving Kanhangad and Kasaragod district",
+    localText: "Our office is in Kanhangad, and we work with businesses across Kasaragod district. Read more:",
     whatsappTitle: "WhatsApp us",
     whatsappText: "The quickest way to reach the team. Tap to open a chat.",
     openWhatsApp: "Open WhatsApp",

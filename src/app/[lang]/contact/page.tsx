@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHero } from "@/components/layout/PageHero";
 import { Section } from "@/components/ui/Section";
 import { ButtonLink } from "@/components/ui/ButtonLink";
@@ -8,6 +9,7 @@ import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { buildMetadata } from "@/lib/seo";
 import { siteConfig, SITE_URL, mapsUrl } from "@/lib/site";
 import { getServices } from "@/content/localized";
+import { locationPages } from "@/content/locations";
 import { getDictionary } from "@/i18n/dictionary";
 import { localeMeta, localePath } from "@/i18n/config";
 import { resolveLang, type LangProps } from "@/i18n/params";
@@ -100,6 +102,21 @@ export default async function ContactPage({ params }: LangProps) {
               <ButtonLink href={mapsUrl} external variant="secondary" className="mt-5">
                 {c.openMap}
               </ButtonLink>
+              <h3 className="mt-7 font-display text-base font-bold">{c.localTitle}</h3>
+              <p className="mt-2 leading-relaxed text-ink-soft">{c.localText}</p>
+              <ul className="mt-2 space-y-1.5">
+                {locationPages.map((p) => (
+                  <li key={p.slug}>
+                    <Link
+                      href={p.path}
+                      hrefLang="en"
+                      className="font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-900"
+                    >
+                      {p.linkLabel[lang]}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {siteConfig.email && (

@@ -28,7 +28,7 @@ export const siteConfig = {
   legalName: "DOCS MEDIA",
   tagline: "Digital marketing agency",
   description:
-    "DOCS MEDIA is a digital marketing agency for businesses: Meta Ads, social media marketing, SEO, website development, Shopify stores and creative content.",
+    "DOCS MEDIA is a digital marketing agency in Kanhangad, Kerala: Meta Ads, social media marketing, SEO, website development, Shopify stores and creative content.",
   url: SITE_URL,
   locale: "en_US",
   /** BCP 47 tag. Drives <html lang>, hreflang and schema inLanguage. */
@@ -51,6 +51,16 @@ export const siteConfig = {
     postalCode: "671315",
     /** ISO country code, used only in structured data (not displayed). */
     countryCode: "IN",
+  },
+  /**
+   * Where the business serves in person. Used for schema.org areaServed. Only the
+   * office's own town and district, the areas the local pages target.
+   */
+  serviceArea: {
+    city: "Kanhangad",
+    district: "Kasaragod district",
+    region: "Kerala",
+    country: "India",
   },
   /** Optional. Leave empty until a real address exists; it is hidden when empty. */
   email: "",
@@ -156,4 +166,4 @@ export const staticRoutes = [
  * Update when site content changes meaningfully (kept constant so builds are
  * deterministic and prerendering never needs the clock).
  */
-export const CONTENT_LAST_UPDATED = "2026-10-15";
+export const CONTENT_LAST_UPDATED = "2026-10-30";
